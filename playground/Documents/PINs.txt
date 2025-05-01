@@ -6,8 +6,8 @@ PB9		Y	PC5		N
 -			-
 -			-
 PA5		Y	PA12	Y		DOUT5 #define "TREE_WATER_10L"
-PA6		N	PA11    Y        DOUT6 #define "TREE_WATER_20L"
-PB7		N	PB12    Y        DOUT7 #define "TREE_WATER_30L"
+PA6		N	PA11    Y       DOUT6 #define "TREE_WATER_20L"
+PB7		N	PB12    Y       DOUT7 #define "TREE_WATER_30L"
 PB6 	Y	-
 PC7 	Y	-
 PA9 	Y	PB2		Y		DOUT0 #define "#TODO"
