@@ -1,0 +1,46 @@
+Vogelperspektive Rechts (USB zeigt nach oben):
+_CN9____5V__CN10____5V_______Functionality__
+PC9		Y	PC8		Y								
+PB8		Y	PC6		Y
+PB9		Y	PC5		N		
+-			-
+-			-
+PA5		Y	PA12	Y		DOUT5 #define "TREE_WATER_10L"
+PA6		N	PA11    Y        DOUT6 #define "TREE_WATER_20L"
+PB7		N	PB12    Y        DOUT7 #define "TREE_WATER_30L"
+PB6 	Y	-
+PC7 	Y	-
+PA9 	Y	PB2		Y		DOUT0 #define "#TODO"
+PA8		Y	PB1		Y		DOUT1 #define "#TODO"
+PB10	Y	PB15	Y		DOUT2 #define "#TODO"
+PB4		Y	PB14	Y		DOUT3 #define "#TODO"
+PB5		Y	PB13	N		DOUT4 #define "#TODO"
+PB3 	Y	-
+PA10	Y	PC4		N
+PA2 	Y	-
+PA3 	Y	-
+_CN9____CN10_
+
+
+Vogelperspektive Links (USB zeigt nach oben):
+_CN7____5V____CN6___5V____Functionality
+PC10	Y 	PC11	Y
+PC12	Y 	PD2		N
+-			E5V				5V Power Supply
+-			-
+-			-
+-			-
+PA13	N	-		
+PA14	N	-
+PA15	N	-
+GND			GND
+PB7		Y	-
+PC13	N	-
+PC14	N	-
+PC15	N	PA0		Y
+PH0		N	PA10	Y
+PH1		N	PA4		Y
+-			PB0		Y
+PC2		N	PC10	Y
+PC3		N	PC0		N
+_CN7____5V____CN6___5V____Functionality
