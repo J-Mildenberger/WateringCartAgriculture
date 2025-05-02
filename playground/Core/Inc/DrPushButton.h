@@ -20,7 +20,7 @@ typedef enum
 {
 	ButtonReleased,
 	ButtonPushed
-}eButtonState;
+}eDrPushButton_ButtonState;
 typedef enum
 {
 	ButtonIdle,
@@ -37,7 +37,7 @@ typedef struct
 typedef struct
 {
 	uint8_t buttonNum;
-	eButtonState buttonStateOld;
+	eDrPushButton_ButtonState buttonStateOld;
 	sHAL_GPIO HAL_GPIO;
 	eButtonApplicationState ButtonApplState;
 }sButton;
@@ -49,6 +49,6 @@ extern sButton button_3;
 
 /* Function declarations -----------------------------------------------------*/
 void DrPushButton_ButtonISR(sButton *button);
-eButtonState DrPushButton_ButtonGetState(sButton *button);
+eDrPushButton_ButtonState DrPushButton_ButtonGetState(sButton *button);
 
 #endif /* INC_DRPUSHBUTTON_H_ */

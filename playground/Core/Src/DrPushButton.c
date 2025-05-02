@@ -15,10 +15,10 @@
 /* Private function prototypes -----------------------------------------------*/
 
 /* Function definitions ------------------------------------------------------*/
-eButtonState DrPushButton_ButtonGetState(sButton *button) {
+eDrPushButton_ButtonState DrPushButton_ButtonGetState(sButton *button) {
 	GPIO_PinState res = HAL_GPIO_ReadPin(button->HAL_GPIO.GPIOx,
 			button->HAL_GPIO.GPIO_Pin);
-	eButtonState ret;
+	eDrPushButton_ButtonState ret;
 	if (res == GPIO_PIN_RESET) {
 		ret = ButtonReleased;
 	}
@@ -57,8 +57,8 @@ void DrPushButton_ButtonPushedCB(sButton *button) {
 
 void DrPushButton_ButtonISR(sButton *button) {
 	// #todo add disable_button_interrupt();
-	TimerDelay_synch(DEBOUNCE_TIME);
-	eButtonState tempButtonState = DrPushButton_ButtonGetState(button);
+	DrTimer_TimDelay(DEBOUNCE_TIME);
+	eDrPushButton_ButtonState tempButtonState = DrPushButton_ButtonGetState(button);
 	if (tempButtonState != button->buttonStateOld) {
 		/* must be a valid button event */
 		button->buttonStateOld = tempButtonState;
