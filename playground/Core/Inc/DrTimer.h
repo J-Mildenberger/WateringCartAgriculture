@@ -15,12 +15,12 @@
 /* Private defines -----------------------------------------------------------*/
 /* Typedefs and structs ------------------------------------------------------*/
 typedef struct {
-    uint32_t startTime;
-    uint32_t delay;
+	uint32_t startTime;
+	uint32_t delay;
 } sDrTimer_Timer;
 
 typedef struct {
-    uint32_t startTime;
+	uint32_t startTime;
 } sDrTimer_Stopwatch;
 /* Static variables (file-scope) ---------------------------------------------*/
 /* Static vars go in C file, just add extern here if needed */

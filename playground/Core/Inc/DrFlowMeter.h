@@ -17,26 +17,21 @@
 #define TARGET_CNT_30L 90
 
 /* Typedefs and structs ------------------------------------------------------*/
-typedef enum
-{
-	FlowMeter_Idle,
-	FlowMeter_Measuring,
-	FlowMeter_TargetReached,
-}eDrFlowMeter;
+typedef enum {
+	FlowMeter_Idle, FlowMeter_Measuring, FlowMeter_TargetReached,
+} eDrFlowMeter;
 
-typedef struct
-{
+typedef struct {
 	eDrFlowMeter state;
 	uint32_t pulseCount_current;
 	uint32_t pulseCount_target;
-}sDrFlowMeter;
+} sDrFlowMeter;
 /* Static variables (file-scope) ---------------------------------------------*/
 /* Static vars go in C file, just add extern here if needed */
 /* External variables --------------------------------------------------------*/
 
 /* Function declarations -----------------------------------------------------*/
 void DrFlowMeter_ReInit(sDrFlowMeter *flowMeter);
-void DrFlowMeter_StartMeasure(sDrFlowMeter *flowMeter,  uint32_t targetCnt);
-
+void DrFlowMeter_StartMeasure(sDrFlowMeter *flowMeter, uint32_t targetCnt);
 
 #endif /* INC_DRFLOWMETER_H_ */

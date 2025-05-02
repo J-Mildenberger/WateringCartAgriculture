@@ -10,6 +10,7 @@
 
 #include "stm32f4xx_hal.h"
 #include "DrTimer.h"
+#include "DrDebug.h"
 /* Static variables ----------------------------------------------------------*/
 
 /* Private function prototypes -----------------------------------------------*/
@@ -58,7 +59,10 @@ void DrPushButton_ButtonPushedCB(sButton *button) {
 void DrPushButton_ButtonISR(sButton *button) {
 	// #todo add disable_button_interrupt();
 	DrTimer_TimDelay(DEBOUNCE_TIME);
-	eDrPushButton_ButtonState tempButtonState = DrPushButton_ButtonGetState(button);
+	eDrPushButton_ButtonState tempButtonState = DrPushButton_ButtonGetState(
+			button);
+	DBG_PRINT("buttonStateOld %u", button->buttonStateOld);
+	DBG_PRINT("buttonState %u", tempButtonState);
 	if (tempButtonState != button->buttonStateOld) {
 		/* must be a valid button event */
 		button->buttonStateOld = tempButtonState;

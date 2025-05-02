@@ -1,46 +1,96 @@
 Vogelperspektive Rechts (USB zeigt nach oben):
-_CN9____5V__CN10____5V_______Functionality__
-PC9		Y	PC8		Y								
-PB8		Y	PC6		Y
-PB9		Y	PC5		N		
--			-
--			-
-PA5		Y	PA12	Y		DOUT5 #define "TREE_WATER_10L"
-PA6		N	PA11    Y       DOUT6 #define "TREE_WATER_20L"
-PB7		N	PB12    Y       DOUT7 #define "TREE_WATER_30L"
-PB6 	Y	-
-PC7 	Y	-
-PA9 	Y	PB2		Y		DOUT0 #define "#TODO"
-PA8		Y	PB1		Y		DOUT1 #define "#TODO"
-PB10	Y	PB15	Y		DOUT2 #define "#TODO"
-PB4		Y	PB14	Y		DOUT3 #define "#TODO"
-PB5		Y	PB13	N		DOUT4 #define "#TODO"
-PB3 	Y	-
-PA10	Y	PC4		N
-PA2 	Y	-
-PA3 	Y	-
-_CN9____CN10_
+CN10____5V_______Functionality__
+PC8		Y		DIN9 #define (Taster)"Pumpe 2 an solange HIGH, Pumpe 2 aus wenn Füllstandsensor reagiert, oder DIN LOW"					
+PC6		Y		DIN8 #define "Gießarm einfahren (Horizontal) Stepper" fahren solange HIGH
+PC5		N		
+-
+-
+PA12	Y		DIN1 #define "TREE_WATER_15L"
+PA11    Y       DIN2 #define "TREE_WATER_30L"
+PB12    Y       DIN3 #define "PUMP 1 ON / OFF" "wenn high > 1.5sek dann pumpe auf solange HIGH"
+-
+-
+PB2		Y		DIN4 #define "Gießarm vollständig einfahren" (mit Licht aktiv signalisiert)
+PB1		Y		DIN5 #define "Gießarm Hochfahren" Input spiegel (HIGH wenn HIGH)
+PB15	Y		DIN6 #define "Gießarm Runterfahren" Input spiegel (HIGH wenn HIGH)
+PB14	Y		DIN7 #define "Gießarm ausfahren (Horizontal) Stepper" fahren solange HIGH
+PB13	N		DIN10 #define "FlowMeterDetect"
+-
+PC4		N
+-
+-
+CN10____5V_______Functionality__
+
+_CN9____5V____Functionality__
+PC9		Y		
+PB8		Y		
+PB9		Y		
+-			
+-			
+PA5		X		
+PA6		N		PDOUT Direction Höhenverstellung
+PB7		N		PDOUT Direction Höhenverstellung
+PB6 	Y		DIN FlowMeter Signal		
+PC7 	Y		DIN Endschalter1
+PA9 	Y	    DIN Endschalter2
+PA8		Y	    DIN Füllstandsensor1
+PB10	Y		DIN Füllstandsensor2
+PB4		Y		PDOUT An/Aus Höhenverstellung
+PB5		Y		
+PB3 	X	
+PA10	Y	
+PA2 	X	
+PA3 	X	
+_CN9____5V____Functionality__
 
 
 Vogelperspektive Links (USB zeigt nach oben):
-_CN7____5V____CN6___5V____Functionality
-PC10	Y 	PC11	Y
-PC12	Y 	PD2		N
--			E5V				5V Power Supply
--			-
--			-
--			-
-PA13	N	-		
-PA14	N	-
-PA15	N	-
-GND			GND
-PB7		Y	-
-PC13	N	-
-PC14	N	-
-PC15	N	PA0		Y
-PH0		N	PA10	Y
-PH1		N	PA4		Y
--			PB0		Y
-PC2		N	PC10	Y
-PC3		N	PC0		N
-_CN7____5V____CN6___5V____Functionality
+_CN7____5V____
+PC10	Y 	
+PC12	Y 	
+-			
+-			
+-			
+-			
+PA13	X	 
+PA14	X	
+PA15	N	PDOUT Stepper_Pulse (PWM)
+GND			
+PB7		Y	PDOUT Stepper_Enable	
+PC13	N	PDOUT Stepper_Dir
+PC14	N	PDOUT Ventil_1 Pumpe (Relais1) (direkt an Pumpe gekoppelt vor an; nach aus etc.; 0.5sek.)
+PC15	N	PDOUT Ventil_2 befüllen (Relais2) (fast immer offen, außer Füllstand == voll)
+PH0		X	  	
+PH1		X	
+-			
+PC2		N	PDOUT Pumpe_1 Gießen (Relais3)
+PC3		N	PDOUT Pumpe_2 befüllen (Relais4)
+_CN7____5V__
+
+CN6___5V____Functionality
+	PC11	Y
+	PD2		N
+	E5V				5V Power :
+	-
+	-
+	-
+	-		
+	-
+	-
+	GND
+	-
+	-
+	-
+	PA0		Y		PDOUT SIGNAL_ROT (Relais5)
+	PA10	Y		PDOUT SIGNAL_Grün (Relais6)
+	PA4		Y		PDOUT SIGNAL_Blau (Relais7)
+	PB0		Y       PDOUT SIGNAL_Weiß (Relais8)
+	PC10	Y		
+	PC0		N
+	__CN6___5V____Functionality
+	
+SupplySeiteneffekte:
+Bei zu lange an, alle SIGNALLEUCHTEN AN
+Bei PowerOnReset Gießarm Grundeinstellung 
+Letzte Rest ausm Fass gießen wird nie ordentlich auf Litergrenze terminieren. -> also allgemein Zeit Grenze zum SysReset.
+
