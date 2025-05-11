@@ -29,6 +29,16 @@ extern "C" {
 /* Includes ------------------------------------------------------------------*/
 #include "stm32f4xx_hal.h"
 
+#include "stm32f4xx_ll_system.h"
+#include "stm32f4xx_ll_gpio.h"
+#include "stm32f4xx_ll_exti.h"
+#include "stm32f4xx_ll_bus.h"
+#include "stm32f4xx_ll_cortex.h"
+#include "stm32f4xx_ll_rcc.h"
+#include "stm32f4xx_ll_utils.h"
+#include "stm32f4xx_ll_pwr.h"
+#include "stm32f4xx_ll_dma.h"
+
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 
@@ -57,39 +67,41 @@ void Error_Handler(void);
 /* USER CODE END EFP */
 
 /* Private defines -----------------------------------------------------------*/
-#define B1_Pin GPIO_PIN_13
+#define B1_Pin LL_GPIO_PIN_13
 #define B1_GPIO_Port GPIOC
-#define USART_TX_Pin GPIO_PIN_2
+#define B1_EXTI_IRQn EXTI15_10_IRQn
+#define USART_TX_Pin LL_GPIO_PIN_2
 #define USART_TX_GPIO_Port GPIOA
-#define USART_RX_Pin GPIO_PIN_3
+#define USART_RX_Pin LL_GPIO_PIN_3
 #define USART_RX_GPIO_Port GPIOA
-#define LD2_Pin GPIO_PIN_5
+#define LD2_Pin LL_GPIO_PIN_5
 #define LD2_GPIO_Port GPIOA
-#define BUTTON_EXTEND_WATERINGARM_HORIZ_Pin GPIO_PIN_1
+#define BUTTON_EXTEND_WATERINGARM_HORIZ_Pin LL_GPIO_PIN_1
 #define BUTTON_EXTEND_WATERINGARM_HORIZ_GPIO_Port GPIOB
-#define BUTTON_RETRACT_WATERINGARM_VERT_FULL_Pin GPIO_PIN_2
+#define BUTTON_RETRACT_WATERINGARM_VERT_FULL_Pin LL_GPIO_PIN_2
 #define BUTTON_RETRACT_WATERINGARM_VERT_FULL_GPIO_Port GPIOB
-#define BUTTON_CTRL_PUMP_1_Pin GPIO_PIN_12
-#define BUTTON_CTRL_PUMP_1_GPIO_Port GPIOB
-#define FLOWMETER_DETECT_Pin GPIO_PIN_13
+#define FLOWMETER_DETECT_Pin LL_GPIO_PIN_13
 #define FLOWMETER_DETECT_GPIO_Port GPIOB
-#define BUTTON_RETRACT_WATERINGARM_VERT_Pin GPIO_PIN_14
+#define BUTTON_RETRACT_WATERINGARM_VERT_Pin LL_GPIO_PIN_14
 #define BUTTON_RETRACT_WATERINGARM_VERT_GPIO_Port GPIOB
-#define BUTTON_EXTEND_WATERINGARM_VERT_Pin GPIO_PIN_15
+#define BUTTON_EXTEND_WATERINGARM_VERT_Pin LL_GPIO_PIN_15
 #define BUTTON_EXTEND_WATERINGARM_VERT_GPIO_Port GPIOB
-#define BUTTON_RETRACT_WATERINGARM_HORIZ_Pin GPIO_PIN_6
+#define BUTTON_RETRACT_WATERINGARM_HORIZ_Pin LL_GPIO_PIN_6
 #define BUTTON_RETRACT_WATERINGARM_HORIZ_GPIO_Port GPIOC
-#define BUTTON_PUMP_2_Pin GPIO_PIN_8
-#define BUTTON_PUMP_2_GPIO_Port GPIOC
-#define BUTTON_WATERINGLVL_2_Pin GPIO_PIN_11
-#define BUTTON_WATERINGLVL_2_GPIO_Port GPIOA
-#define BUTTON_WATERINGLVL_1_Pin GPIO_PIN_12
-#define BUTTON_WATERINGLVL_1_GPIO_Port GPIOA
-#define TMS_Pin GPIO_PIN_13
+#define BUTTON_CTRL_PUMP_2_Pin LL_GPIO_PIN_8
+#define BUTTON_CTRL_PUMP_2_GPIO_Port GPIOC
+#define BUTTON_CTRL_PUMP_2_EXTI_IRQn EXTI9_5_IRQn
+#define BUTTON_WATERING_LVL2_Pin LL_GPIO_PIN_11
+#define BUTTON_WATERING_LVL2_GPIO_Port GPIOA
+#define BUTTON_WATERING_LVL2_EXTI_IRQn EXTI15_10_IRQn
+#define BUTTON_WATERING_LVL1_Pin LL_GPIO_PIN_12
+#define BUTTON_WATERING_LVL1_GPIO_Port GPIOA
+#define BUTTON_WATERING_LVL1_EXTI_IRQn EXTI15_10_IRQn
+#define TMS_Pin LL_GPIO_PIN_13
 #define TMS_GPIO_Port GPIOA
-#define TCK_Pin GPIO_PIN_14
+#define TCK_Pin LL_GPIO_PIN_14
 #define TCK_GPIO_Port GPIOA
-#define SWO_Pin GPIO_PIN_3
+#define SWO_Pin LL_GPIO_PIN_3
 #define SWO_GPIO_Port GPIOB
 
 /* USER CODE BEGIN Private defines */

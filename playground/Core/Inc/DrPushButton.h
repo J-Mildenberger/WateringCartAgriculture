@@ -15,9 +15,14 @@
 
 /* Private defines -----------------------------------------------------------*/
 #define DEBOUNCE_TIME 45 /* Time in ms */
+
+
+
+
 /* Typedefs and structs ------------------------------------------------------*/
 typedef enum {
-	ButtonReleased, ButtonPushed
+	ButtonReleased,
+	ButtonPushed,
 } eDrPushButton_ButtonState;
 typedef enum {
 	ButtonIdle,
@@ -32,15 +37,13 @@ typedef struct {
 } sHAL_GPIO;
 typedef struct {
 	uint8_t buttonNum;
-	eDrPushButton_ButtonState buttonStateOld;
 	sHAL_GPIO HAL_GPIO;
+	eDrPushButton_ButtonState buttonStateOld;
 	eButtonApplicationState ButtonApplState;
 } sButton;
 
 /* External variables --------------------------------------------------------*/
-extern sButton button_1;
-extern sButton button_2;
-extern sButton button_3;
+extern sButton Buttons[13];
 
 /* Function declarations -----------------------------------------------------*/
 void DrPushButton_ButtonISR(sButton *button);

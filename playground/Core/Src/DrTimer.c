@@ -8,7 +8,6 @@
 /* Includes ------------------------------------------------------------------*/
 #include "DrTimer.h"
 #include "stm32f4xx_hal.h"
-#include "stm32f4xx_hal_tim.h"
 
 /* Static variables ----------------------------------------------------------*/
 /* Private function prototypes -----------------------------------------------*/

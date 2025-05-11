@@ -5,8 +5,8 @@ PC6		Y		DIN8 #define "Gießarm einfahren (Horizontal) Stepper" fahren solange HI
 PC5		N		
 -
 -
-PA12	Y		DIN1 #define "TREE_WATER_15L"
-PA11    Y       DIN2 #define "TREE_WATER_30L"
+PA12	Y		DIN1 #define "TREE_WATER_LVL1"
+PA11    Y       DIN2 #define "TREE_WATER_LVL2"
 PB12    Y       DIN3 #define "PUMP 1 ON / OFF" "wenn high > 1.5sek dann pumpe auf solange HIGH"
 -
 -
@@ -90,7 +90,7 @@ CN6___5V____Functionality
 	__CN6___5V____Functionality
 	
 SupplySeiteneffekte:
-Bei zu lange an, alle SIGNALLEUCHTEN AN
-Bei PowerOnReset Gießarm Grundeinstellung 
-Letzte Rest ausm Fass gießen wird nie ordentlich auf Litergrenze terminieren. -> also allgemein Zeit Grenze zum SysReset.
+-Bei zu lange an, alle SIGNALLEUCHTEN AN
+-Bei PowerOnReset Gießarm Grundeinstellung 
+-Letzte Rest ausm Fass gießen wird nie ordentlich auf Litergrenze terminieren. -> also allgemein Zeit Grenze zum SysReset.
 

@@ -11,7 +11,6 @@
 /* Includes ------------------------------------------------------------------*/
 #include "stdint.h"
 #include "stm32f4xx_hal.h"
-#include "stm32f4xx_hal_tim.h"
 /* Private defines -----------------------------------------------------------*/
 /* Typedefs and structs ------------------------------------------------------*/
 typedef struct {
