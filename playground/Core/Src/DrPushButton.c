@@ -9,6 +9,7 @@
 #include "DrPushButton.h"
 
 #include "stm32f4xx_hal.h"
+#include "stm32f4xx_ll_gpio.h"
 #include "DrTimer.h"
 #include "DrDebug.h"
 #include "string.h"
@@ -57,11 +58,12 @@ eDrPushButton_ButtonState DrPushButton_ButtonGetState(sButton *button) {
 }
 
 void DrPushButton_ButtonReleasedCB(sButton *button) {
+	DBG_PRINT_BUTTON(button);
 
 	if ((button->buttonNum == DIN1_BUTTON_WATERINGLVL_1)
 			|| (button->buttonNum == DIN2_BUTTON_WATERINGLVL_2)) {
 		switch (button->ButtonApplState) {
-//		DBG_PRINT_BUTTON(button);
+
 		case (ButtonIdle): {
 
 		}
@@ -83,6 +85,11 @@ void DrPushButton_ButtonReleasedCB(sButton *button) {
 
 		if (button->buttonNum == DIN3_BUTTON_CTRL_PUMP_1) {
 
+		}
+
+		if (button->buttonNum == DIN11_BUTTON_EVALUSER)
+		{
+			LL_GPIO_TogglePin(GPIOA, LL_GPIO_PIN_5);
 		}
 	}
 }
