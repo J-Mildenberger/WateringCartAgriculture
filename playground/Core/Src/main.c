@@ -25,6 +25,7 @@
 /* USER CODE BEGIN Includes */
 #include "stdio.h"
 #include "DrDebug.h"
+#include "DrTimer.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -46,6 +47,7 @@
 
 /* USER CODE BEGIN PV */
 uint32_t var;
+volatile uint8_t exti12_sw_triggered = 0;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -56,11 +58,13 @@ void SystemClock_Config(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-int _write(int file, char *ptr, int len) {
+int _write(int file, char *ptr, int len)
+{
 	(void) file;
 	int DataIdx;
 
-	for (DataIdx = 0; DataIdx < len; DataIdx++) {
+	for (DataIdx = 0; DataIdx < len; DataIdx++)
+	{
 		ITM_SendChar(*ptr++);
 	}
 	return len;
@@ -100,14 +104,29 @@ int main(void)
   MX_USART2_UART_Init();
   /* USER CODE BEGIN 2 */
 
+  sDrTimer_Timer Timer0;
+  Timer0.timMode = eTimMode_CYCLIC;
+  DrTimer_StartTimer(&Timer0, 10000);
+  LL_EXTI_GenerateSWI_0_31(LL_EXTI_LINE_12);
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
-	while (1) {
+	while (1)
+	{
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
+
+		if (DrTimer_IsTimerOver(&Timer0))
+		{
+			exti12_sw_triggered = 1;
+			LL_EXTI_GenerateSWI_0_31(LL_EXTI_LINE_12);
+			exti12_sw_triggered = 0;
+		}
+//		DBG_PRINT("TESTTESTTEST");
+//		HAL_Delay(400);
+//		LL_GPIO_TogglePin(GPIOA, LL_GPIO_PIN_5);
 	}
   /* USER CODE END 3 */
 }
@@ -171,7 +190,8 @@ void Error_Handler(void)
   /* USER CODE BEGIN Error_Handler_Debug */
 	/* User can add his own implementation to report the HAL error return state */
 	__disable_irq();
-	while (1) {
+	while (1)
+	{
 	}
   /* USER CODE END Error_Handler_Debug */
 }

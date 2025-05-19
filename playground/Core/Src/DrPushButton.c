@@ -20,7 +20,8 @@ sButton Buttons[13];
 /* Private function prototypes -----------------------------------------------*/
 
 /* Function definitions ------------------------------------------------------*/
-void DrPushButton_InitResetButtons(void) {
+void DrPushButton_InitResetButtons(void)
+{
 	memset(&Buttons[0], 0x00, sizeof(Buttons));
 	/* Button 1
 	 * DIN1_BUTTON_WATERINGLVL_1
@@ -44,46 +45,57 @@ void DrPushButton_InitResetButtons(void) {
 
 }
 
-eDrPushButton_ButtonState DrPushButton_ButtonGetState(sButton *button) {
+eDrPushButton_ButtonState DrPushButton_ButtonGetState(sButton *button)
+{
 	GPIO_PinState res = HAL_GPIO_ReadPin(button->HAL_GPIO.GPIOx,
 			button->HAL_GPIO.GPIO_Pin);
 	eDrPushButton_ButtonState ret;
-	if (res == GPIO_PIN_RESET) {
+	if (res == GPIO_PIN_RESET)
+	{
 		ret = ButtonReleased;
 	}
-	if (res == GPIO_PIN_SET) {
+	if (res == GPIO_PIN_SET)
+	{
 		ret = ButtonPushed;
 	}
 	return ret;
 }
 
-void DrPushButton_ButtonReleasedCB(sButton *button) {
+void DrPushButton_ButtonReleasedCB(sButton *button)
+{
 	DBG_PRINT_BUTTON(button);
 
 	if ((button->buttonNum == DIN1_BUTTON_WATERINGLVL_1)
-			|| (button->buttonNum == DIN2_BUTTON_WATERINGLVL_2)) {
-		switch (button->ButtonApplState) {
+			|| (button->buttonNum == DIN2_BUTTON_WATERINGLVL_2))
+	{
+		switch (button->ButtonApplState)
+		{
 
-		case (ButtonIdle): {
-
-		}
-			break;
-		case (ButtonWaterLvl_1): {
-
-		}
-			break;
-		case (ButtonWaterLvl_2): {
+		case (ButtonIdle):
+		{
 
 		}
 			break;
-		case (ButtonWaterLvl_3): {
+		case (ButtonWaterLvl_1):
+		{
+
+		}
+			break;
+		case (ButtonWaterLvl_2):
+		{
+
+		}
+			break;
+		case (ButtonWaterLvl_3):
+		{
 
 		}
 		default:
 			DBG_PRINT("**!!case default reached!!**");
 		}
 
-		if (button->buttonNum == DIN3_BUTTON_CTRL_PUMP_1) {
+		if (button->buttonNum == DIN3_BUTTON_CTRL_PUMP_1)
+		{
 
 		}
 
@@ -94,8 +106,11 @@ void DrPushButton_ButtonReleasedCB(sButton *button) {
 	}
 }
 
-void DrPushButton_ButtonPushedCB(sButton *button) {
-	switch (button->ButtonApplState) {
+void DrPushButton_ButtonPushedCB(sButton *button)
+{
+	DBG_PRINT_BUTTON(button);
+	switch (button->ButtonApplState)
+	{
 	case ButtonIdle:
 		// Your code for ButtonIdle
 		break;
@@ -112,11 +127,15 @@ void DrPushButton_ButtonPushedCB(sButton *button) {
 		// Your code for ButtonWaterManually
 		break;
 	default:
+		DBG_PRINT("**!!case default reached!!**");
 		break;
 	}
 }
-
-void DrPushButton_ButtonISR(sButton *button) {
+#if (DRPUSHBUTTON_TEST == 1)
+extern volatile uint8_t exti12_sw_triggered;
+#endif
+void DrPushButton_ButtonISR(sButton *button)
+{
 	/* Ensure once entered, the IRQ is disabled */
 	DrTimer_TimDelay(DEBOUNCE_TIME);
 
@@ -124,23 +143,42 @@ void DrPushButton_ButtonISR(sButton *button) {
 	eDrPushButton_ButtonState tempButtonState = DrPushButton_ButtonGetState(
 			button);
 
+#if (DRPUSHBUTTON_TEST == 1)
+	if (exti12_sw_triggered == 1)
+	{
+		static uint8_t toggle = 1;
+		if (toggle)
+		{
+			toggle = 0;
+			tempButtonState = ButtonPushed;
+		}
+		else
+		{
+			toggle = 1;
+			tempButtonState = ButtonReleased;
+		}
+	}
+#endif
 	// Debug prints
 	DBG_PRINT("buttonNum: %u", button->buttonNum);
 	DBG_PRINT("buttonStateOld: %u", button->buttonStateOld);
 	DBG_PRINT("buttonState: %u", tempButtonState);
 
 	// Check if the button state has changed
-	if (tempButtonState != button->buttonStateOld) {
+	if (tempButtonState != button->buttonStateOld)
+	{
 		// Must be a valid button event
 		button->buttonStateOld = tempButtonState;
 
 		// Handle button release
-		if (button->buttonStateOld == ButtonReleased) {
+		if (button->buttonStateOld == ButtonReleased)
+		{
 			DBG_PRINT("buttonNum: %u RELEASED", button->buttonNum);
 			DrPushButton_ButtonReleasedCB(button);
 		}
 		// Handle button push
-		else if (button->buttonStateOld == ButtonPushed) {
+		else if (button->buttonStateOld == ButtonPushed)
+		{
 			DBG_PRINT("buttonNum: %u PUSHED", button->buttonNum);
 			DrPushButton_ButtonPushedCB(button);
 		}

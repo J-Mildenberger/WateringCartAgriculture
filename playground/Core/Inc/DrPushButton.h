@@ -16,7 +16,7 @@
 /* Private defines -----------------------------------------------------------*/
 #define DEBOUNCE_TIME 45 /* Time in ms */
 
-
+#define DRPUSHBUTTON_TEST 1
 
 
 /* Typedefs and structs ------------------------------------------------------*/
