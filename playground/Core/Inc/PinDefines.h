@@ -24,6 +24,17 @@
 #define DIN7_BUTTON_RETRACT_WATERINGARM_VERT //PB14
 #define DIN10_FLOWMETER_DETECT //PB13
 #define DIN11_BUTTON_EVALUSER 12//PC13
+//PC7 	Y		DIN Endschalter1
+//PA9 	Y	    DIN Endschalter2
+//PA8		Y	    DIN Füllstandsensor1
+//PB10	Y		DIN Füllstandsensor2
+
+
+/* PINS used as dig. outputs */
+#define DOUT1_PUMP1_VALVE //PC14 //PDOUT Ventil_1 Pumpe (Relais1) (direkt an Pumpe gekoppelt vor an; nach aus etc.; 0.5sek.)
+#define DOUT2_PUMP1_WATER //PC2 //PDOUT Pumpe_1 Gießen (Relais3)
+#define DOUT3_PUMP2_VALVE //PC15 //PDOUT Ventil_2 befüllen (Relais2) (fast immer offen, außer Füllstand == voll
+
 
 
 /* External variables --------------------------------------------------------*/

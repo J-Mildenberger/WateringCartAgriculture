@@ -1,6 +1,6 @@
 Vogelperspektive Rechts (USB zeigt nach oben):
 CN10____5V_______Functionality__
-PC8		Y		DIN9 #define (Taster)"Pumpe 2 an solange HIGH, Pumpe 2 aus wenn Füllstandsensor reagiert, oder DIN LOW"					
+PC8		Y		DIN9 #define (Taster)"Pumpe 2 an solange HIGH (weil rastender Taster), Pumpe 2 aus wenn Füllstandsensor reagiert, oder DIN LOW"					
 PC6		Y		DIN8 #define "Gießarm einfahren (Horizontal) Stepper" fahren solange HIGH
 PC5		N		
 -
@@ -82,7 +82,7 @@ CN6___5V____Functionality
 	-
 	-
 	PA0		Y		PDOUT SIGNAL_ROT (Relais5)
-	PA10	Y		PDOUT SIGNAL_Grün (Relais6)
+	PA1		Y		PDOUT SIGNAL_Grün (Relais6)
 	PA4		Y		PDOUT SIGNAL_Blau (Relais7)
 	PB0		Y       PDOUT SIGNAL_Weiß (Relais8)
 	PC10	Y		
