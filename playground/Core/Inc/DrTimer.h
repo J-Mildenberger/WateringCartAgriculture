@@ -12,10 +12,18 @@
 #include "stdint.h"
 #include "stm32f4xx_hal.h"
 /* Private defines -----------------------------------------------------------*/
+
 /* Typedefs and structs ------------------------------------------------------*/
+typedef enum
+{
+	eTimMode_ONESHOT,
+	eTimMode_CYCLIC,
+} eTimMode;
+
 typedef struct {
+	eTimMode timMode;
 	uint32_t startTime;
-	uint32_t delay;
+	uint32_t delay_ms;
 } sDrTimer_Timer;
 
 typedef struct {
