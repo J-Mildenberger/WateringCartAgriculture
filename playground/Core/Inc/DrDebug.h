@@ -22,7 +22,7 @@
                __func__, \
                __LINE__, \
                (buttonPtr)->buttonNum, \
-               ButtonApplicationStateToString((buttonPtr)->ButtonApplState)); \
+               ButtonApplicationStateToString((buttonPtr)->ButtonApplState_Watering)); \
     } while (0)
 
 
@@ -31,7 +31,7 @@
 /* Static vars go in C file, just add extern here if needed */
 /* External variables --------------------------------------------------------*/
 /* Function declarations -----------------------------------------------------*/
-const char* ButtonApplicationStateToString(eButtonApplicationState state);
+const char* ButtonApplicationStateToString(eButtonApplState_Watering state);
 
 
 #endif /* SRC_DRDEBUG_H_ */

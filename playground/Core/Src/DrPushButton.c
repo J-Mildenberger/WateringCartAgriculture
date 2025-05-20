@@ -14,8 +14,14 @@
 #include "DrDebug.h"
 #include "string.h"
 #include "PinDefines.h"
+#include "DrFlowMeter.h"
+
+/* Private defines ----------------------------------------------------------*/
+#define ARRAY_COUNT(array_) (sizeof(array_)/sizeof((array_)[0]))
+
 /* Static variables ----------------------------------------------------------*/
-sButton Buttons[13];
+/* Extern variables ----------------------------------------------------------*/
+sButton Buttons[15];
 
 /* Private function prototypes -----------------------------------------------*/
 
@@ -35,6 +41,12 @@ void DrPushButton_InitResetButtons(void)
 	Buttons[1].buttonNum = DIN2_BUTTON_WATERINGLVL_2;
 	Buttons[1].HAL_GPIO.GPIOx = GPIOA;
 	Buttons[1].HAL_GPIO.GPIO_Pin = 11;
+	/* Button 3
+	 * DIN3_BUTTON_CTRL_PUMP_1
+	 */
+	Buttons[2].buttonNum = DIN3_BUTTON_CTRL_PUMP_1;
+	Buttons[2].HAL_GPIO.GPIOx = GPIOB;
+	Buttons[2].HAL_GPIO.GPIO_Pin = 12;
 
 	/* Button 12
 	 * DIN11_BUTTON_EVALUSER
@@ -65,51 +77,26 @@ void DrPushButton_ButtonReleasedCB(sButton *button)
 {
 	DBG_PRINT_BUTTON(button);
 
-	if ((button->buttonNum == DIN1_BUTTON_WATERINGLVL_1)
-			|| (button->buttonNum == DIN2_BUTTON_WATERINGLVL_2))
+	if (button->buttonNum == DIN1_BUTTON_WATERINGLVL_1)
 	{
-		switch (button->ButtonApplState)
-		{
-
-		case (ButtonIdle):
-		{
-
-		}
-			break;
-		case (ButtonWaterLvl_1):
-		{
-
-		}
-			break;
-		case (ButtonWaterLvl_2):
-		{
-
-		}
-			break;
-		case (ButtonWaterLvl_3):
-		{
-
-		}
-		default:
-			DBG_PRINT("**!!case default reached!!**");
-		}
-
-		if (button->buttonNum == DIN3_BUTTON_CTRL_PUMP_1)
-		{
-
-		}
-
-		if (button->buttonNum == DIN11_BUTTON_EVALUSER)
-		{
-			LL_GPIO_TogglePin(GPIOA, LL_GPIO_PIN_5);
-		}
+		button->ButtonApplState_Watering = ButtonWaterLvl_1;
+		DrFlowMeter_SetTarget(&FlowMeter1, TARGET_CNT_LVL1);
 	}
+	if (button->buttonNum == DIN2_BUTTON_WATERINGLVL_2)
+	{
+		button->ButtonApplState_Watering = ButtonWaterLvl_2;
+	}
+	if (button->buttonNum == DIN3_BUTTON_CTRL_PUMP_1)
+	{
+
+	}
+
 }
 
 void DrPushButton_ButtonPushedCB(sButton *button)
 {
 	DBG_PRINT_BUTTON(button);
-	switch (button->ButtonApplState)
+	switch (button->ButtonApplState_Watering)
 	{
 	case ButtonIdle:
 		// Your code for ButtonIdle
@@ -120,11 +107,14 @@ void DrPushButton_ButtonPushedCB(sButton *button)
 	case ButtonWaterLvl_2:
 		// Your code for ButtonWaterLvl_2
 		break;
-	case ButtonWaterLvl_3:
-		// Your code for ButtonWaterLvl_3
-		break;
 	case ButtonWaterManually:
 		// Your code for ButtonWaterManually
+		break;
+	case FlowMeterTarget:
+
+		break;
+	case Timeout:
+
 		break;
 	default:
 		DBG_PRINT("**!!case default reached!!**");

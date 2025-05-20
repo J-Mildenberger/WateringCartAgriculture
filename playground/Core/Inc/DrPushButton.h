@@ -25,12 +25,18 @@ typedef enum {
 	ButtonPushed,
 } eDrPushButton_ButtonState;
 typedef enum {
-	ButtonIdle,
+	ButtonIdle ,
 	ButtonWaterLvl_1,
 	ButtonWaterLvl_2,
-	ButtonWaterLvl_3,
 	ButtonWaterManually,
-} eButtonApplicationState;
+	FlowMeterTarget,
+	Timeout,
+} eButtonApplState_Watering;
+typedef enum {
+	ButtonActionIdle,
+	ButtonActionOngoing,
+	ButtonActionProcessed,
+} eButtonActionState;
 typedef struct {
 	GPIO_TypeDef *GPIOx;
 	uint16_t GPIO_Pin;
@@ -39,11 +45,12 @@ typedef struct {
 	uint8_t buttonNum;
 	sHAL_GPIO HAL_GPIO;
 	eDrPushButton_ButtonState buttonStateOld;
-	eButtonApplicationState ButtonApplState;
+	eButtonApplState_Watering ButtonApplState_Watering;
+	eButtonActionState ButtonActionState;
 } sButton;
 
 /* External variables --------------------------------------------------------*/
-extern sButton Buttons[13];
+extern sButton Buttons[15];
 
 /* Function declarations -----------------------------------------------------*/
 void DrPushButton_ButtonISR(sButton *button);
