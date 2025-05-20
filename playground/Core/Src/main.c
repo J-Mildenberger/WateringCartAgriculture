@@ -36,6 +36,23 @@
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
 
+#define LED_ALIVE(Timer_) \
+		if (DrTimer_IsTimerOver(Timer_)) {					\
+		    if (TimerLED.delay_ms == 850)                       \
+		    {                                                   \
+		    	LL_GPIO_ResetOutputPin(GPIOA, LL_GPIO_PIN_5);   \
+		    	DrTimer_StartTimer(Timer_, 150);             \
+		    }                                                   \
+		    else                                                \
+		    {                                                   \
+		    	LL_GPIO_SetOutputPin(GPIOA, LL_GPIO_PIN_5);     \
+				DrTimer_StartTimer(Timer_, 850);             \
+		    }                                                   \
+		}
+
+
+
+
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -104,9 +121,21 @@ int main(void)
   MX_USART2_UART_Init();
   /* USER CODE BEGIN 2 */
 
-  sDrTimer_Timer Timer0;
-  Timer0.timMode = eTimMode_CYCLIC;
-  DrTimer_StartTimer(&Timer0, 10000);
+  /* LED Timer */
+  static sDrTimer_Timer TimerLED;
+  TimerLED.timMode = eTimMode_CYCLIC;
+  DrTimer_StartTimer(&TimerLED, 800);
+
+  static sDrTimer_Timer Timer1;
+  Timer1.timMode = eTimMode_CYCLIC;
+  DrTimer_StartTimer(&Timer1, 10000);
+  static sDrTimer_Timer Timer2;
+  Timer2.timMode = eTimMode_CYCLIC;
+  DrTimer_StartTimer(&Timer2, 10000);
+  static sDrTimer_Timer Timer3;
+  Timer3.timMode = eTimMode_CYCLIC;
+  DrTimer_StartTimer(&Timer3, 10000);
+
   LL_EXTI_GenerateSWI_0_31(LL_EXTI_LINE_12);
   /* USER CODE END 2 */
 
@@ -117,13 +146,16 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
+	LED_ALIVE(&TimerLED);
 
-		if (DrTimer_IsTimerOver(&Timer0))
-		{
-			exti12_sw_triggered = 1;
-			LL_EXTI_GenerateSWI_0_31(LL_EXTI_LINE_12);
-			exti12_sw_triggered = 0;
-		}
+
+
+//		if (DrTimer_IsTimerOver(&Timer0))
+//		{
+//			exti12_sw_triggered = 1;
+//			LL_EXTI_GenerateSWI_0_31(LL_EXTI_LINE_12);
+//			exti12_sw_triggered = 0;
+//		}
 //		DBG_PRINT("TESTTESTTEST");
 //		HAL_Delay(400);
 //		LL_GPIO_TogglePin(GPIOA, LL_GPIO_PIN_5);
