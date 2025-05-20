@@ -12,9 +12,9 @@
 #include "stdint.h"
 
 /* Private defines -----------------------------------------------------------*/
-#define TARGET_CNT_10L 30
-#define TARGET_CNT_20L 60
-#define TARGET_CNT_30L 90
+#define TARGET_CNT_LVL1 500u  /* 10 Liters */
+#define TARGET_CNT_LVL2 1000u /* 20 Liters */
+#define TARGET_CNT_LIMIT (3*TARGET_CNT_LVL2)
 
 /* Typedefs and structs ------------------------------------------------------*/
 typedef enum {
@@ -29,9 +29,9 @@ typedef struct {
 /* Static variables (file-scope) ---------------------------------------------*/
 /* Static vars go in C file, just add extern here if needed */
 /* External variables --------------------------------------------------------*/
-
+extern sDrFlowMeter FlowMeter1;
 /* Function declarations -----------------------------------------------------*/
-void DrFlowMeter_ReInit(sDrFlowMeter *flowMeter);
+void DrFlowMeter_ResetInit(sDrFlowMeter *flowMeter);
 void DrFlowMeter_StartMeasure(sDrFlowMeter *flowMeter, uint32_t targetCnt);
-
+void DrFlowMeter_SetTarget(sDrFlowMeter *flowMeter, uint32_t increment);
 #endif /* INC_DRFLOWMETER_H_ */

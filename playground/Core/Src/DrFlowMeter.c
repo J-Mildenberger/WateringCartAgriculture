@@ -9,11 +9,14 @@
 #include "DrFlowMeter.h"
 #include "stdint.h"
 #include "stm32f4xx_hal.h"
-
+#include "DrDebug.h"
 /* Static variables ----------------------------------------------------------*/
+/* Extern variables ----------------------------------------------------------*/
+sDrFlowMeter FlowMeter1;
 /* Private function prototypes -----------------------------------------------*/
 /* Function definitions ------------------------------------------------------*/
-void DrFlowMeter_ReInit(sDrFlowMeter *flowMeter) {
+void DrFlowMeter_ReInit(sDrFlowMeter *flowMeter)
+{
 	flowMeter->pulseCount_current = 0;
 	flowMeter->state = FlowMeter_Idle;
 }
@@ -21,7 +24,8 @@ void DrFlowMeter_ReInit(sDrFlowMeter *flowMeter) {
 /* @brief Valve Application calls this Function
  *
  */
-void DrFlowMeter_StartMeasure(sDrFlowMeter *flowMeter, uint32_t targetCnt) {
+void DrFlowMeter_StartMeasure(sDrFlowMeter *flowMeter, uint32_t targetCnt)
+{
 	flowMeter->pulseCount_current = 0;
 	flowMeter->pulseCount_target = targetCnt;
 	flowMeter->state = FlowMeter_Measuring;
@@ -31,13 +35,38 @@ void DrFlowMeter_StartMeasure(sDrFlowMeter *flowMeter, uint32_t targetCnt) {
  *
  * @param incr gives possibility to buffer calls of this function
  */
-void DrFlowMeter_PulseCounterCB(sDrFlowMeter *flowMeter, uint16_t incr) {
-	if (flowMeter->state == FlowMeter_Measuring) {
+void DrFlowMeter_PulseCounterCB(sDrFlowMeter *flowMeter, uint16_t incr)
+{
+	if (flowMeter->state == FlowMeter_Measuring)
+	{
 		flowMeter->pulseCount_current += incr;
-		if (flowMeter->pulseCount_current >= flowMeter->pulseCount_target) {
+		if (flowMeter->pulseCount_current >= flowMeter->pulseCount_target)
+		{
 			flowMeter->state = FlowMeter_TargetReached;
 			/* To reduce complexity and multiple application modes,
 			 Valve appl. polls for FlowMeter_TargetReached */
 		}
 	}
+}
+
+void DrFlowMeter_SetTarget(sDrFlowMeter *flowMeter, uint32_t increment)
+{
+	if (flowMeter->state == FlowMeter_TargetReached)
+	{
+		DBG_PRINT("ERR CANNOT SET FLOWMETER TARGET WHILE REACHED: %u",
+				flowMeter->pulseCount_target);
+		return;
+	}
+	if (((flowMeter->pulseCount_target) + increment) <= TARGET_CNT_LIMIT)
+	{
+		flowMeter->pulseCount_target += increment;
+		DBG_PRINT("SET FLOWMETER TARGET: %u __ current: %u",
+				flowMeter->pulseCount_target, flowMeter->pulseCount_current);
+	}
+	else
+	{
+		DBG_PRINT("ERR CANNOT SET FLOWMETER TARGET: %u __ current: %u __ incr: %u",
+				flowMeter->pulseCount_target, flowMeter->pulseCount_current, increment);
+	}
+	return;
 }
