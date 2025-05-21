@@ -69,10 +69,6 @@ void Error_Handler(void);
 /* Private defines -----------------------------------------------------------*/
 #define DOUT2_PUMP1_WATER_Pin LL_GPIO_PIN_2
 #define DOUT2_PUMP1_WATER_GPIO_Port GPIOC
-#define USART_TX_Pin LL_GPIO_PIN_2
-#define USART_TX_GPIO_Port GPIOA
-#define USART_RX_Pin LL_GPIO_PIN_3
-#define USART_RX_GPIO_Port GPIOA
 #define LD2_Pin LL_GPIO_PIN_5
 #define LD2_GPIO_Port GPIOA
 #define DIN5_BUTTON_EXTEND_WATERINGARM_HORIZ_Pin LL_GPIO_PIN_1

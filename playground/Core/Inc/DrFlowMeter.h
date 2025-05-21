@@ -34,4 +34,5 @@ extern sDrFlowMeter FlowMeter1;
 void DrFlowMeter_ResetInit(sDrFlowMeter *flowMeter);
 void DrFlowMeter_StartMeasure(sDrFlowMeter *flowMeter, uint32_t targetCnt);
 void DrFlowMeter_SetTarget(sDrFlowMeter *flowMeter, uint32_t increment);
+void DrFlowMeter_PulseCounterCB(sDrFlowMeter *flowMeter);
 #endif /* INC_DRFLOWMETER_H_ */

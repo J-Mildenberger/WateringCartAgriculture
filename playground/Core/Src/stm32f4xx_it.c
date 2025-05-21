@@ -27,7 +27,6 @@
 #include "DrFlowMeter.h"
 /* USER CODE END Includes */
 
-
 /* Private typedef -----------------------------------------------------------*/
 /* USER CODE BEGIN TD */
 
@@ -191,7 +190,10 @@ void SysTick_Handler(void)
   /* USER CODE END SysTick_IRQn 0 */
   HAL_IncTick();
   /* USER CODE BEGIN SysTick_IRQn 1 */
-
+  if ((HAL_GetTick() >=  0xFFFFF000))
+  {
+	  NVIC_SystemReset();
+  }
   /* USER CODE END SysTick_IRQn 1 */
 }
 
@@ -294,7 +296,7 @@ void EXTI15_10_IRQHandler(void)
 	if (reg & LL_EXTI_LINE_10)
 	{
 		LL_EXTI_ClearFlag_0_31(LL_EXTI_LINE_10);
-		FlowMeter1.pulseCount_current++;
+		DrFlowMeter_PulseCounterCB(&FlowMeter1);
 		return;
 	}
 	else if (reg & LL_EXTI_LINE_11)

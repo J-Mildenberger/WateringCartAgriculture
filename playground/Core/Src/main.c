@@ -38,7 +38,7 @@
 
 #define LED_ALIVE(Timer_) \
 		if (DrTimer_IsTimerOver(Timer_)) {					\
-		    if (TimerLED.delay_ms == 850)                       \
+		    if (TimerLEDKeepAlive.delay_ms == 850)                       \
 		    {                                                   \
 		    	LL_GPIO_ResetOutputPin(GPIOA, LL_GPIO_PIN_5);   \
 		    	DrTimer_StartTimer(Timer_, 150);             \
@@ -63,7 +63,6 @@
 /* Private variables ---------------------------------------------------------*/
 
 /* USER CODE BEGIN PV */
-uint32_t var;
 volatile uint8_t exti12_sw_triggered = 0;
 /* USER CODE END PV */
 
@@ -75,8 +74,13 @@ void SystemClock_Config(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
+#define USE_UART_FOR_DEBUG 1
+
 int _write(int file, char *ptr, int len)
 {
+#if (USE_UART_FOR_DEBUG == 1)
+	HAL_UART_Transmit(&huart2, (uint8_t *)ptr, len, 4000);
+#else
 	(void) file;
 	int DataIdx;
 
@@ -84,6 +88,7 @@ int _write(int file, char *ptr, int len)
 	{
 		ITM_SendChar(*ptr++);
 	}
+#endif
 	return len;
 }
 
@@ -121,14 +126,16 @@ int main(void)
   MX_USART2_UART_Init();
   /* USER CODE BEGIN 2 */
 
-  /* LED Timer */
-  static sDrTimer_Timer TimerLED;
-  TimerLED.timMode = eTimMode_CYCLIC;
-  DrTimer_StartTimer(&TimerLED, 800);
 
-  static sDrTimer_Timer Timer1;
-  Timer1.timMode = eTimMode_CYCLIC;
-  DrTimer_StartTimer(&Timer1, 10000);
+  /* LED Timer */
+  static sDrTimer_Timer TimerLEDKeepAlive;
+  TimerLEDKeepAlive.timMode = eTimMode_CYCLIC;
+  DrTimer_StartTimer(&TimerLEDKeepAlive, 800);
+
+  static sDrTimer_Timer TimerUARTKeepAlive;
+  TimerUARTKeepAlive.timMode = eTimMode_CYCLIC;
+  DrTimer_StartTimer(&TimerUARTKeepAlive, 1000);
+
   static sDrTimer_Timer Timer2;
   Timer2.timMode = eTimMode_CYCLIC;
   DrTimer_StartTimer(&Timer2, 10000);
@@ -146,8 +153,12 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-	LED_ALIVE(&TimerLED);
-
+	LED_ALIVE(&TimerLEDKeepAlive);
+	if (DrTimer_IsTimerOver(&TimerUARTKeepAlive))
+	{
+//		HAL_UART_Transmit(&huart1, (uint8_t *)"UART WORKING\r\n", 14, 4000);
+		DBG_PRINT("UART WORKING\r\n");
+	}
 
 
 //		if (DrTimer_IsTimerOver(&Timer0))

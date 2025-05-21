@@ -35,11 +35,11 @@ void DrFlowMeter_StartMeasure(sDrFlowMeter *flowMeter, uint32_t targetCnt)
  *
  * @param incr gives possibility to buffer calls of this function
  */
-void DrFlowMeter_PulseCounterCB(sDrFlowMeter *flowMeter, uint16_t incr)
+void DrFlowMeter_PulseCounterCB(sDrFlowMeter *flowMeter)
 {
 	if (flowMeter->state == FlowMeter_Measuring)
 	{
-		flowMeter->pulseCount_current += incr;
+		flowMeter->pulseCount_current += 1;
 		if (flowMeter->pulseCount_current >= flowMeter->pulseCount_target)
 		{
 			flowMeter->state = FlowMeter_TargetReached;
