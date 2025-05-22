@@ -17,21 +17,20 @@
 
 #define DBG_PRINT_BUTTON(buttonPtr) \
     do { \
-        printf("[%-8lu ms] %s | Line %d | buttonNum: %u | State: %s\r\n", \
+        printf("[%-8lu ms] button#: %u | ApplWater: %s | Action: %s \r\n", \
                HAL_GetTick(), \
-               __func__, \
-               __LINE__, \
                (buttonPtr)->buttonNum, \
-               ButtonApplicationStateToString((buttonPtr)->ButtonApplState_Watering)); \
+               ButtonApplicationStateWateringToString((buttonPtr)->ButtonApplState_Watering), \
+               ButtonActionStateToString((buttonPtr)->ButtonActionState) );\
     } while (0)
-
-
+//	Line %s %d 		   __func__, \
+//               __LINE__ ); \
 /* Typedefs and structs ------------------------------------------------------*/
 /* Static variables (file-scope) ---------------------------------------------*/
 /* Static vars go in C file, just add extern here if needed */
 /* External variables --------------------------------------------------------*/
 /* Function declarations -----------------------------------------------------*/
-const char* ButtonApplicationStateToString(eButtonApplState_Watering state);
-
-
+const char* ButtonApplicationStateWateringToString(
+		eButtonApplState_Watering state);
+const char* ButtonActionStateToString(eButtonActionState state);
 #endif /* SRC_DRDEBUG_H_ */
