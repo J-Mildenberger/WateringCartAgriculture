@@ -17,6 +17,9 @@
 #define DEBOUNCE_TIME 45 /* Time in ms */
 
 #define DRPUSHBUTTON_TEST 1
+#if (DRPUSHBUTTON_TEST == 1)
+#warning "DRPUSHBUTTON_TEST IS MANIPULATING THE BUTTONS"
+#endif
 
 
 /* Typedefs and structs ------------------------------------------------------*/
@@ -26,15 +29,14 @@ typedef enum {
 } eDrPushButton_ButtonState;
 typedef enum {
 	ButtonIdle ,
-	ButtonWaterLvl_1,
-	ButtonWaterLvl_2,
+	ButtonWaterAuto,
 	ButtonWaterManually,
 	FlowMeterTarget,
 	Timeout,
 } eButtonApplState_Watering;
 typedef enum {
 	ButtonActionIdle,
-	ButtonActionOngoing,
+	ButtonActionEnqueued,
 	ButtonActionProcessed,
 } eButtonActionState;
 typedef struct {
@@ -44,9 +46,10 @@ typedef struct {
 typedef struct {
 	uint8_t buttonNum;
 	sHAL_GPIO HAL_GPIO;
+	eButtonActionState ButtonActionState;
 	eDrPushButton_ButtonState buttonStateOld;
 	eButtonApplState_Watering ButtonApplState_Watering;
-	eButtonActionState ButtonActionState;
+	/* #TODO extend by further ButtonApplState_## - for simplicity any button includes any ButtonApplState */
 } sButton;
 
 /* External variables --------------------------------------------------------*/

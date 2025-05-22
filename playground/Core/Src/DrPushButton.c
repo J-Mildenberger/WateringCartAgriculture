@@ -15,9 +15,8 @@
 #include "string.h"
 #include "PinDefines.h"
 #include "DrFlowMeter.h"
-
+#include "DrSystem.h"
 /* Private defines ----------------------------------------------------------*/
-#define ARRAY_COUNT(array_) (sizeof(array_)/sizeof((array_)[0]))
 
 /* Static variables ----------------------------------------------------------*/
 /* Extern variables ----------------------------------------------------------*/
@@ -75,22 +74,11 @@ eDrPushButton_ButtonState DrPushButton_ButtonGetState(sButton *button)
 
 void DrPushButton_ButtonReleasedCB(sButton *button)
 {
-	DBG_PRINT_BUTTON(button);
-
-	if (button->buttonNum == DIN1_BUTTON_WATERINGLVL_1)
+	if (button->ButtonActionState == ButtonActionIdle)
 	{
-		button->ButtonApplState_Watering = ButtonWaterLvl_1;
-		DrFlowMeter_SetTarget(&FlowMeter1, TARGET_CNT_LVL1);
+		button->ButtonActionState = ButtonActionEnqueued;
+		DBG_PRINT_BUTTON(button);
 	}
-	if (button->buttonNum == DIN2_BUTTON_WATERINGLVL_2)
-	{
-		button->ButtonApplState_Watering = ButtonWaterLvl_2;
-	}
-	if (button->buttonNum == DIN3_BUTTON_CTRL_PUMP_1)
-	{
-
-	}
-
 }
 
 void DrPushButton_ButtonPushedCB(sButton *button)
@@ -101,11 +89,8 @@ void DrPushButton_ButtonPushedCB(sButton *button)
 	case ButtonIdle:
 		// Your code for ButtonIdle
 		break;
-	case ButtonWaterLvl_1:
+	case ButtonWaterAuto:
 		// Your code for ButtonWaterLvl_1
-		break;
-	case ButtonWaterLvl_2:
-		// Your code for ButtonWaterLvl_2
 		break;
 	case ButtonWaterManually:
 		// Your code for ButtonWaterManually

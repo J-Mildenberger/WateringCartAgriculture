@@ -26,6 +26,8 @@
 #include "stdio.h"
 #include "DrDebug.h"
 #include "DrTimer.h"
+#include "DrSystem.h"
+#include "Application.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -49,7 +51,22 @@
 				DrTimer_StartTimer(Timer_, 850);             \
 		    }                                                   \
 		}
-
+#define MAX_FRAMES 5
+#define KEEP_ALIVE_ANIM()                                         \
+    do {                                                          \
+        static int _frame = 0;                                    \
+        static const char *patterns[MAX_FRAMES] = {               \
+            "     alive     ",                               \
+            "    > alive <    ",                             \
+            "   >> alive <<   ",                             \
+            "  >>> alive <<<  ",                             \
+            " >>>> alive <<<< "                              \
+        };                                                        \
+        int phase = (_frame < MAX_FRAMES) ? _frame                \
+                                          : 2 * MAX_FRAMES - _frame - 2; \
+        DBG_PRINT("%s", patterns[phase]);                         \
+        _frame = (_frame + 1) % (2 * MAX_FRAMES - 2);             \
+    } while (0)
 
 
 
@@ -116,15 +133,19 @@ int main(void)
 
   /* Configure the system clock */
   SystemClock_Config();
-
+  DBG_PRINT(" clock configured ");
   /* USER CODE BEGIN SysInit */
-
+  Disable_And_Record_Enabled_Low_Priority_IRQs();
   /* USER CODE END SysInit */
 
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
   MX_USART2_UART_Init();
+  HAL_Delay(10);
+  DBG_PRINT("...delay for system ramp up");
+  HAL_Delay(150);
   /* USER CODE BEGIN 2 */
+  Reenable_Previously_Enabled_Low_Priority_IRQs();
 
 
   /* LED Timer */
@@ -134,7 +155,7 @@ int main(void)
 
   static sDrTimer_Timer TimerUARTKeepAlive;
   TimerUARTKeepAlive.timMode = eTimMode_CYCLIC;
-  DrTimer_StartTimer(&TimerUARTKeepAlive, 1000);
+  DrTimer_StartTimer(&TimerUARTKeepAlive, 1);
 
   static sDrTimer_Timer Timer2;
   Timer2.timMode = eTimMode_CYCLIC;
@@ -143,7 +164,6 @@ int main(void)
   Timer3.timMode = eTimMode_CYCLIC;
   DrTimer_StartTimer(&Timer3, 10000);
 
-  LL_EXTI_GenerateSWI_0_31(LL_EXTI_LINE_12);
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -156,9 +176,14 @@ int main(void)
 	LED_ALIVE(&TimerLEDKeepAlive);
 	if (DrTimer_IsTimerOver(&TimerUARTKeepAlive))
 	{
-//		HAL_UART_Transmit(&huart1, (uint8_t *)"UART WORKING\r\n", 14, 4000);
-		DBG_PRINT("UART WORKING\r\n");
+		KEEP_ALIVE_ANIM();
+		DrTimer_StartTimer(&TimerUARTKeepAlive, 1500);
+		LL_EXTI_GenerateSWI_0_31(LL_EXTI_LINE_12);
+		exti12_sw_triggered = 1;
 	}
+
+	Appl_checkButtons_watering();
+	Appl_Processed_to_Idle();
 
 
 //		if (DrTimer_IsTimerOver(&Timer0))
@@ -167,8 +192,7 @@ int main(void)
 //			LL_EXTI_GenerateSWI_0_31(LL_EXTI_LINE_12);
 //			exti12_sw_triggered = 0;
 //		}
-//		DBG_PRINT("TESTTESTTEST");
-//		HAL_Delay(400);
+
 //		LL_GPIO_TogglePin(GPIOA, LL_GPIO_PIN_5);
 	}
   /* USER CODE END 3 */
