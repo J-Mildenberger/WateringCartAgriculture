@@ -19,7 +19,7 @@
     do { \
         printf("[%-6lu] button#: %u | ApplWater: %s | Action: %s \r\n", \
                HAL_GetTick(), \
-               (buttonPtr)->buttonNum, \
+               ((buttonPtr)->buttonNum+1), \
                ButtonApplicationStateWateringToString((buttonPtr)->ButtonApplState_Watering), \
                ButtonActionStateToString((buttonPtr)->ButtonActionState) );\
     } while (0)

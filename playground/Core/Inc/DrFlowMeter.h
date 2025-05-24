@@ -14,7 +14,7 @@
 /* Private defines -----------------------------------------------------------*/
 #define TARGET_CNT_LVL1 500u  /* 10 Liters */
 #define TARGET_CNT_LVL2 1000u /* 20 Liters */
-#define TARGET_CNT_LIMIT (3*TARGET_CNT_LVL2)
+#define TARGET_CNT_LIMIT (6*TARGET_CNT_LVL2)
 
 /* Typedefs and structs ------------------------------------------------------*/
 typedef enum {

@@ -21,9 +21,33 @@ uint8_t Buttons_watering_idxs[4] =
 
 /* Private function prototypes -----------------------------------------------*/
 /* Function definitions ------------------------------------------------------*/
+volatile uint8_t Appl_chkButtonWatering_guard;
+volatile uint8_t Appl_chkButtonWatering_guard_isr; /* prevent multiple access, .._ist is exclusively set during ISR! */
+
+
+void Appl_notify(void)
+{
+	Appl_chkButtonWatering_guard_isr = 1;
+}
+
+void Appl_mute(void)
+{
+	Appl_chkButtonWatering_guard_isr = 0;
+}
 
 void Appl_checkButtons_watering(void)
 {
+	if (Appl_chkButtonWatering_guard_isr == 0)
+		return;
+
+	if (!Appl_chkButtonWatering_guard_isr)
+	{
+		_CRITICAL_SECTION_ENTER();
+		Appl_chkButtonWatering_guard = Appl_chkButtonWatering_guard_isr;
+		_CRITICAL_SECTION_EXIT();
+	}
+
+
 	for (uint8_t i = 0; i < ARRAY_COUNT(Buttons_watering_idxs); i++)
 	{
 		_CRITICAL_SECTION_ENTER();
@@ -44,6 +68,7 @@ void Appl_checkButtons_watering(void)
 					ButtonTemp.ButtonApplState_Watering = ButtonWaterAuto;
 					DrFlowMeter_StartMeasure(&FlowMeter1, TARGET_CNT_LVL2);
 				}
+				DBG_PRINT("Start Measure target_\x1b[0m%u\x1b[0m", FlowMeter1.pulseCount_target);
 				ButtonTemp.ButtonActionState = ButtonActionProcessed;
 				break;
 
@@ -56,7 +81,7 @@ void Appl_checkButtons_watering(void)
 				{
 					DrFlowMeter_SetTarget(&FlowMeter1, TARGET_CNT_LVL2);
 				}
-				Buttons[Buttons_watering_idxs[i]].ButtonActionState = ButtonActionProcessed;
+				ButtonTemp.ButtonActionState = ButtonActionProcessed;
 
 				break;
 
@@ -78,6 +103,8 @@ void Appl_checkButtons_watering(void)
 			}
 
 		}
+		Buttons[Buttons_watering_idxs[i]] = ButtonTemp;
+		Appl_mute();
 		_CRITICAL_SECTION_EXIT();
 	}
 

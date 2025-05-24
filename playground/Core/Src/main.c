@@ -64,7 +64,7 @@
         };                                                        \
         int phase = (_frame < MAX_FRAMES) ? _frame                \
                                           : 2 * MAX_FRAMES - _frame - 2; \
-        DBG_PRINT("%s", patterns[phase]);                         \
+       DBG_PRINT("\x1b[32;1m%s\x1b[0m", patterns[phase]);         \
         _frame = (_frame + 1) % (2 * MAX_FRAMES - 2);             \
     } while (0)
 
@@ -133,7 +133,7 @@ int main(void)
 
   /* Configure the system clock */
   SystemClock_Config();
-  DBG_PRINT(" clock configured ");
+
   /* USER CODE BEGIN SysInit */
   Disable_And_Record_Enabled_Low_Priority_IRQs();
   /* USER CODE END SysInit */
@@ -141,10 +141,10 @@ int main(void)
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
   MX_USART2_UART_Init();
-  HAL_Delay(10);
-  DBG_PRINT("...delay for system ramp up");
-  HAL_Delay(150);
   /* USER CODE BEGIN 2 */
+  HAL_Delay(10);
+  DBG_PRINT("\x1b[35m...delay for system ramp up\x1b[0m");
+  HAL_Delay(150);
   Reenable_Previously_Enabled_Low_Priority_IRQs();
 
 
@@ -164,6 +164,9 @@ int main(void)
   Timer3.timMode = eTimMode_CYCLIC;
   DrTimer_StartTimer(&Timer3, 10000);
 
+  /* applicative init */
+  DrPushButton_InitResetButtons();
+
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -177,9 +180,9 @@ int main(void)
 	if (DrTimer_IsTimerOver(&TimerUARTKeepAlive))
 	{
 		KEEP_ALIVE_ANIM();
-		DrTimer_StartTimer(&TimerUARTKeepAlive, 1500);
-		LL_EXTI_GenerateSWI_0_31(LL_EXTI_LINE_12);
-		exti12_sw_triggered = 1;
+		DrTimer_StartTimer(&TimerUARTKeepAlive, 800);
+//		LL_EXTI_GenerateSWI_0_31(LL_EXTI_LINE_12);
+//		exti12_sw_triggered = 1;
 	}
 
 	Appl_checkButtons_watering();

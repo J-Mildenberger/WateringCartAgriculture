@@ -33,26 +33,27 @@ void DrPushButton_InitResetButtons(void)
 	 */
 	Buttons[0].buttonNum = DIN1_BUTTON_WATERINGLVL_1;
 	Buttons[0].HAL_GPIO.GPIOx = GPIOA;
-	Buttons[0].HAL_GPIO.GPIO_Pin = 12;
+	Buttons[0].HAL_GPIO.GPIO_Pin = GPIO_PIN_12;
+
 	/* Button 2
 	 * DIN2_BUTTON_WATERINGLVL_2
 	 */
 	Buttons[1].buttonNum = DIN2_BUTTON_WATERINGLVL_2;
 	Buttons[1].HAL_GPIO.GPIOx = GPIOA;
-	Buttons[1].HAL_GPIO.GPIO_Pin = 11;
+	Buttons[1].HAL_GPIO.GPIO_Pin = GPIO_PIN_11;
 	/* Button 3
 	 * DIN3_BUTTON_CTRL_PUMP_1
 	 */
 	Buttons[2].buttonNum = DIN3_BUTTON_CTRL_PUMP_1;
 	Buttons[2].HAL_GPIO.GPIOx = GPIOB;
-	Buttons[2].HAL_GPIO.GPIO_Pin = 12;
+	Buttons[2].HAL_GPIO.GPIO_Pin = GPIO_PIN_12;
 
 	/* Button 12
 	 * DIN11_BUTTON_EVALUSER
 	 */
 	Buttons[12].buttonNum = DIN11_BUTTON_EVALUSER;
 	Buttons[12].HAL_GPIO.GPIOx = GPIOC;
-	Buttons[12].HAL_GPIO.GPIO_Pin = 13;
+	Buttons[12].HAL_GPIO.GPIO_Pin = GPIO_PIN_13;
 
 }
 
@@ -77,6 +78,7 @@ void DrPushButton_ButtonReleasedCB(sButton *button)
 	if (button->ButtonActionState == ButtonActionIdle)
 	{
 		button->ButtonActionState = ButtonActionEnqueued;
+		Appl_notify();
 		DBG_PRINT_BUTTON(button);
 	}
 }
@@ -134,8 +136,8 @@ void DrPushButton_ButtonISR(sButton *button)
 		}
 	}
 #endif
-	// Debug prints
-	DBG_PRINT("button# %u | StateOld: %u | State %u ", (uint32_t)button->buttonNum, (uint32_t)button->buttonStateOld, (uint32_t)tempButtonState);
+
+	//DBG_PRINT("button# %u | StateOld: %u | State %u ", (uint32_t)button->buttonNum, (uint32_t)button->buttonStateOld, (uint32_t)tempButtonState);
 
 	// Check if the button state has changed
 	if (tempButtonState != button->buttonStateOld)
@@ -146,13 +148,13 @@ void DrPushButton_ButtonISR(sButton *button)
 		// Handle button release
 		if (button->buttonStateOld == ButtonReleased)
 		{
-			DBG_PRINT("buttonNum: %u RELEASED", button->buttonNum);
+			DBG_PRINT("buttonNum: %u RELEASED", (button->buttonNum)+1);
 			DrPushButton_ButtonReleasedCB(button);
 		}
 		// Handle button push
 		else if (button->buttonStateOld == ButtonPushed)
 		{
-			DBG_PRINT("buttonNum: %u PUSHED", button->buttonNum);
+			DBG_PRINT("buttonNum: %u PUSHED", (button->buttonNum)+1);
 			DrPushButton_ButtonPushedCB(button);
 		}
 	}

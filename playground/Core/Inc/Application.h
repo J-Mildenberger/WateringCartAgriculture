@@ -24,6 +24,6 @@
 
 void Appl_checkButtons_watering(void);
 void Appl_Processed_to_Idle(void);
-
+void Appl_notify(void);
 
 #endif /* INC_APPLICATION_H_ */
