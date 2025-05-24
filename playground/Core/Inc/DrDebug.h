@@ -13,11 +13,11 @@
 #include "DrPushButton.h"
 /* Private defines -----------------------------------------------------------*/
 #define DBG_PRINT(fmt, ...) \
-    printf("[%-8lu ms] " fmt "\r\n", HAL_GetTick(), ##__VA_ARGS__)
+    printf("[%-6lu] " fmt "\r\n", HAL_GetTick(), ##__VA_ARGS__)
 
 #define DBG_PRINT_BUTTON(buttonPtr) \
     do { \
-        printf("[%-8lu ms] button#: %u | ApplWater: %s | Action: %s \r\n", \
+        printf("[%-6lu] button#: %u | ApplWater: %s | Action: %s \r\n", \
                HAL_GetTick(), \
                (buttonPtr)->buttonNum, \
                ButtonApplicationStateWateringToString((buttonPtr)->ButtonApplState_Watering), \

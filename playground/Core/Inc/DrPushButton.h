@@ -14,9 +14,9 @@
 #include "stm32f4xx_hal_gpio.h"
 
 /* Private defines -----------------------------------------------------------*/
-#define DEBOUNCE_TIME 45 /* Time in ms */
+#define DEBOUNCE_TIME 75 /* Time in ms */
 
-#define DRPUSHBUTTON_TEST 1
+#define DRPUSHBUTTON_TEST 0
 #if (DRPUSHBUTTON_TEST == 1)
 #warning "DRPUSHBUTTON_TEST IS MANIPULATING THE BUTTONS"
 #endif
@@ -58,5 +58,7 @@ extern sButton Buttons[15];
 /* Function declarations -----------------------------------------------------*/
 void DrPushButton_ButtonISR(sButton *button);
 eDrPushButton_ButtonState DrPushButton_ButtonGetState(sButton *button);
+void DrPushButton_InitResetButtons(void);
+
 
 #endif /* INC_DRPUSHBUTTON_H_ */

@@ -135,9 +135,7 @@ void DrPushButton_ButtonISR(sButton *button)
 	}
 #endif
 	// Debug prints
-	DBG_PRINT("buttonNum: %u", button->buttonNum);
-	DBG_PRINT("buttonStateOld: %u", button->buttonStateOld);
-	DBG_PRINT("buttonState: %u", tempButtonState);
+	DBG_PRINT("button# %u | StateOld: %u | State %u ", (uint32_t)button->buttonNum, (uint32_t)button->buttonStateOld, (uint32_t)tempButtonState);
 
 	// Check if the button state has changed
 	if (tempButtonState != button->buttonStateOld)
