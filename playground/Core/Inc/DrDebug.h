@@ -13,7 +13,7 @@
 #include "DrPushButton.h"
 /* Private defines -----------------------------------------------------------*/
 #define DBG_PRINT(fmt, ...) \
-    printf("[%-6lu] " fmt "\r\n", HAL_GetTick(), ##__VA_ARGS__)
+    printf("[%-6lu] " fmt "\r\n", (unsigned long)HAL_GetTick(), ##__VA_ARGS__)
 
 #define DBG_PRINT_BUTTON(buttonPtr) \
     do { \
@@ -23,8 +23,27 @@
                ButtonApplicationStateWateringToString((buttonPtr)->ButtonApplState_Watering), \
                ButtonActionStateToString((buttonPtr)->ButtonActionState) );\
     } while (0)
-//	Line %s %d 		   __func__, \
-//               __LINE__ ); \
+
+#define MAX_FRAMES 5
+#define KEEP_ALIVE_ANIM()                                         \
+    do {                                                          \
+        static int _frame = 0;                                    \
+        static const char *patterns[MAX_FRAMES] = {               \
+            "      alive     ",                               \
+            "    > alive <    ",                             \
+            "   >> alive <<   ",                             \
+            "  >>> alive <<<  ",                             \
+            " >>>> alive <<<< "                              \
+        };                                                        \
+        int phase = (_frame < MAX_FRAMES) ? _frame                \
+                                          : 2 * MAX_FRAMES - _frame - 2; \
+       DBG_PRINT("\x1b[32;1m%s\x1b[0m", patterns[phase]);         \
+        _frame = (_frame + 1) % (2 * MAX_FRAMES - 2);             \
+    } while (0)
+
+
+
+
 /* Typedefs and structs ------------------------------------------------------*/
 /* Static variables (file-scope) ---------------------------------------------*/
 /* Static vars go in C file, just add extern here if needed */
