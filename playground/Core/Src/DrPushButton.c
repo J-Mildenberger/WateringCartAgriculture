@@ -77,13 +77,22 @@ eDrPushButton_ButtonState DrPushButton_ButtonGetState(sButton *button)
 	return ret;
 }
 
-void DrPushButton_ButtonReleasedCB(sButton *button)
+void DrPushButton_ButtonReleasedCB(sButton *pButton)
 {
-	if (button->ButtonActionState == ButtonActionIdle)
+	if (pButton->ButtonActionState == ButtonActionIdle)
 	{
-		button->ButtonActionState = ButtonActionEnqueued;
-		MyQueue_Enqueue(&buttonQueue,button);
-		DBG_PRINT_BUTTON(button);
+		/* Watering level is designed to be raised incrementally by the user */
+		if ((pButton->buttonNum == DIN1_BUTTON_WATERINGLVL_1) || (pButton->buttonNum == DIN2_BUTTON_WATERINGLVL_2))
+		{
+			pButton->ButtonActionState = ButtonActionIdle;
+		}
+		else
+		{
+			pButton->ButtonActionState = ButtonActionEnqueued;
+		}
+
+		MyQueue_Enqueue(&buttonQueue, pButton);
+		DBG_PRINT_BUTTON(pButton);
 	}
 }
 
@@ -94,14 +103,14 @@ void DrPushButton_ButtonPushedCB(sButton *button)
 #if (DRPUSHBUTTON_TEST == 1)
 extern volatile uint8_t exti12_sw_triggered;
 #endif
-void DrPushButton_ButtonISR(sButton *button)
+void DrPushButton_ButtonISR(sButton *pButton)
 {
 	/* Ensure once entered, the IRQ is disabled */
 	DrTimer_TimDelay(DEBOUNCE_TIME);
 
 	// Get the current button state
 	eDrPushButton_ButtonState tempButtonState = DrPushButton_ButtonGetState(
-			button);
+			pButton);
 
 #if (DRPUSHBUTTON_TEST == 1)
 	if (exti12_sw_triggered == 1)
@@ -120,22 +129,22 @@ void DrPushButton_ButtonISR(sButton *button)
 	}
 #endif
 	// Check if the button state has changed
-	if (tempButtonState != button->buttonStateOld)
+	if (tempButtonState != pButton->buttonStateOld)
 	{
 		// Must be a valid button event
-		button->buttonStateOld = tempButtonState;
+		pButton->buttonStateOld = tempButtonState;
 
 		// Handle button release
-		if (button->buttonStateOld == ButtonReleased)
+		if (pButton->buttonStateOld == ButtonReleased)
 		{
-			DBG_PRINT("buttonNum: %lu RELEASED", (button->buttonNum)+1);
-			DrPushButton_ButtonReleasedCB(button);
+			DBG_PRINT("buttonNum: %lu RELEASED", (pButton->buttonNum)+1);
+			DrPushButton_ButtonReleasedCB(pButton);
 		}
 		// Handle button push
-		else if (button->buttonStateOld == ButtonPushed)
+		else if (pButton->buttonStateOld == ButtonPushed)
 		{
-			DBG_PRINT("buttonNum: %lu PUSHED", (button->buttonNum)+1);
-			DrPushButton_ButtonPushedCB(button);
+			DBG_PRINT("buttonNum: %lu PUSHED", (pButton->buttonNum)+1);
+			DrPushButton_ButtonPushedCB(pButton);
 		}
 	}
 }

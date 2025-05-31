@@ -18,14 +18,14 @@
 extern sButton Buttons[15]; /* handled by dedicated Queue */
 /* Static variables ----------------------------------------------------------*/
 eApplState_watering ApplState_watering;
-sApplElements ApplElements[8]; /* handled by dedicated Queue */
+sApplElement ApplElements[8]; /* handled by dedicated Queue */
 
 /* Queue Handles */
 tQueue buttonQueue;
 tQueue applQueue;
 /* Queue Buffers - determining queue capacity */
 sButton buttonQueueBuf[QUEUE_SIZE];
-sApplElements applQueueBuf[QUEUE_SIZE];
+sApplElement applQueueBuf[QUEUE_SIZE];
 
 /* Private function prototypes -----------------------------------------------*/
 void ApplHandler_WateringButtons(sButton *pButton);
@@ -58,25 +58,53 @@ void Appl_Processed_to_Idle(void)
 	}
 }
 
-void Appl_ApplHandler_MAIN(tQueue *pQueue)
+
+
+void ApplHandler_MAIN(tQueue *pQueue)
 {
-	sButton buttonToProcess;
-	if (MyQueue_Dequeue(pQueue, &buttonToProcess))
-	{
-		if (ButtonMask_Watering & buttonToProcess.ButtonMask)
-		{
-			ApplHandler_WateringButtons(&buttonToProcess);
-		}
-		// #TODO think about processed flag here
-	}
-	else
-	{
-		DBG_PRINT("Queue __ %s __ is empty, queue.count: %i",pQueue->name, pQueue->count);
-		/* #TODO SysFailure Handling */
-		// Timeout
-		// Force Safe State
-		// SystemReset
-	}
+#if (QUEUE_DEBUG == 1)
+	   static uint32_t lastPrintTick = 0;
+	    uint32_t now = HAL_GetTick();
+
+	    // Only process logic if 5 seconds have passed
+	    if ((now - lastPrintTick) >= 5000)
+	    {
+	        lastPrintTick = now;
+
+	        if (MyQueue_IsEmpty(pQueue))
+	        {
+	            DBG_PRINT("Queue __ %s __ is empty, queue.count: %i", pQueue->name, pQueue->count);
+	        }
+	        else
+	        {
+	            DBG_PRINT("Queue __ %s __ has %i elements:", pQueue->name, pQueue->count);
+
+	            for (uint32_t i = 0; i < pQueue->count; ++i)
+	            {
+	                uint32_t index = (pQueue->tail + i) % pQueue->capacity;
+	                uint8_t *src = pQueue->buffer + (index * pQueue->elementSize);
+
+	                // Assuming sButton is the only thing in the queue
+	                sButton *btn = (sButton *)src;
+	                DBG_PRINT("  [%lu] ButtonMask=0x%X", i, btn->ButtonMask);
+	            }
+	        }
+	    }
+#endif
+	    // Now handle actual dequeuing and processing
+	    sButton buttonToProcess;
+	    if (MyQueue_Dequeue(pQueue, &buttonToProcess))
+	    {
+	        if (ButtonMask_Watering & buttonToProcess.ButtonMask)
+	        {
+	            ApplHandler_WateringButtons(&buttonToProcess);
+	        }
+	        // #TODO think about processed flag here
+	    }
+	    else
+	    {
+	        // Optional: Add other non-print error handling here
+	    }
 
 }
 
@@ -106,12 +134,13 @@ void ApplHandler_WateringButtons(sButton *pButton)
 		MyQueue_Enqueue(&applQueue, &ApplElements[eApplElement_watering_Auto]);
 		ApplElements[eApplElement_watering_Auto].ApplActionState =
 				ApplActionState_Enqueued;
-		MyQueue_Enqueue(&applQueue, &ApplElements[eApplElement_FlowMeterTarget]);
+		MyQueue_Enqueue(&applQueue,
+				&ApplElements[eApplElement_FlowMeterTarget]);
 		ApplElements[eApplElement_FlowMeterTarget].ApplActionState =
 				ApplActionState_Enqueued;
 
 		DBG_PRINT("Start Measure target_ %lu", FlowMeter1.pulseCount_target);
-		pButton->ButtonActionState = ButtonActionProcessed;
+
 		break;
 
 	case ApplState_watering_Auto:
@@ -123,7 +152,6 @@ void ApplHandler_WateringButtons(sButton *pButton)
 		{
 			DrFlowMeter_SetTarget(&FlowMeter1, TARGET_CNT_LVL2);
 		}
-		pButton->ButtonActionState = ButtonActionProcessed;
 
 		break;
 
@@ -139,44 +167,76 @@ void ApplHandler_WateringButtons(sButton *pButton)
 
 void ApplHandler_Watering(void)
 {
+	static uint32_t lastPrintTick = 0;
+	sApplElement ApplElToProcess;
+	uint32_t now = HAL_GetTick();
 
-	sApplElements ApplElToProcess;
-	MyQueue_Dequeue(&applQueue, &ApplElToProcess);
-
-	if (ApplElToProcess.ApplElement == eApplElement_watering_Auto)
+	// Print contents of the queue every 5 seconds
+	if ((now - lastPrintTick) >= 5000)
 	{
-		/* start watering mechanism (1st) open valve -> (2nd) start pump */
+		lastPrintTick = now;
 
-	}
-	else if (ApplElToProcess.ApplElement == eApplElement_FlowMeterTarget)
-	{
-
-		bool reached = ApplHandler_CheckFlowMeterTargetReached(&FlowMeter1);
-		if (!reached) /* if not reached - enqueue again */
+		if (MyQueue_IsEmpty(&applQueue))
 		{
-			MyQueue_Enqueue(&applQueue,
-					&ApplElements[eApplElement_FlowMeterTarget]);
-			ApplElements[eApplElement_FlowMeterTarget].ApplActionState =
-					ApplActionState_Enqueued;
+			DBG_PRINT("Queue __ %s __ is empty, queue.count: %i", applQueue.name, applQueue.count);
 		}
-		else if (reached) /* if reached mark as processed and enqueue watering stop mechanism */
+		else
 		{
-			ApplElements[eApplElement_FlowMeterTarget].ApplActionState =
-					ApplActionState_Processed;
+			DBG_PRINT("Queue __ %s __ has %i elements:", applQueue.name, applQueue.count);
 
-			MyQueue_Enqueue(&applQueue,
-					&ApplElements[eApplElement_watering_Stop]);
-			ApplElements[eApplElement_watering_Stop].ApplActionState =
-					ApplActionState_Enqueued;
+			for (uint32_t i = 0; i < applQueue.count; ++i)
+			{
+				uint32_t index = (applQueue.tail + i) % applQueue.capacity;
+				uint8_t *src = applQueue.buffer + (index * applQueue.elementSize);
+
+				sApplElement *el = (sApplElement *)src;
+				DBG_PRINT("  [%lu] ApplElement=%d, ActionState=%d",
+				          i,
+				          el->ApplElement,
+				          el->ApplActionState);
+			}
 		}
 	}
-	else if (ApplElToProcess.ApplElement == eApplElement_watering_Stop)
-	{
 
-	}
-	else if (ApplElToProcess.ApplElement == ApplState_watering_Timeout)
+	// Process one queue element
+	if (MyQueue_Dequeue(&applQueue, &ApplElToProcess))
 	{
+		switch (ApplElToProcess.ApplElement)
+		{
+			case eApplElement_watering_Auto:
+				// Start watering mechanism: open valve -> start pump
+				break;
 
+			case eApplElement_FlowMeterTarget:
+			{
+				bool reached = ApplHandler_CheckFlowMeterTargetReached(&FlowMeter1);
+				if (!reached)
+				{
+					MyQueue_Enqueue(&applQueue, &ApplElements[eApplElement_FlowMeterTarget]);
+					ApplElements[eApplElement_FlowMeterTarget].ApplActionState = ApplActionState_Enqueued;
+				}
+				else
+				{
+					ApplElements[eApplElement_FlowMeterTarget].ApplActionState = ApplActionState_Processed;
+
+					MyQueue_Enqueue(&applQueue, &ApplElements[eApplElement_watering_Stop]);
+					ApplElements[eApplElement_watering_Stop].ApplActionState = ApplActionState_Enqueued;
+				}
+				break;
+			}
+
+			case eApplElement_watering_Stop:
+				// Stop watering mechanism
+				break;
+
+			case eApplElement_watering_Timeout:
+				// Handle timeout
+				break;
+
+			default:
+				DBG_PRINT("Unhandled ApplElement: %d", ApplElToProcess.ApplElement);
+				break;
+		}
 	}
 }
 
@@ -191,4 +251,42 @@ bool ApplHandler_CheckFlowMeterTargetReached(sDrFlowMeter *pFlowMeter)
 	}
 
 	return false;
+}
+
+void ApplHandler_ProcessedApplEls(void)
+{
+	uint8_t foundIdx = ARRAY_COUNT(ApplElements); // Invalid index sentinel
+	// Find the first processed element
+	for (uint8_t idx = 0; idx < ARRAY_COUNT(ApplElements); idx++)
+	{
+		if (ApplElements[idx].ApplActionState == ApplActionState_Processed)
+		{
+			foundIdx = idx;
+			break;
+		}
+	}
+
+	// Handle the found index, if any
+	if (foundIdx < ARRAY_COUNT(ApplElements))
+	{
+		switch(ApplElements[foundIdx].ApplElement)
+		{
+		case eApplElement_FlowMeterTarget:
+			Buttons[DIN1_BUTTON_WATERINGLVL_1].ButtonActionState = ButtonActionIdle;
+			Buttons[DIN2_BUTTON_WATERINGLVL_2].ButtonActionState = ButtonActionIdle;
+			ApplState_watering = ApplState_watering_Idle;
+			break;
+		case eApplElement_watering_Auto:
+			break;
+		case eApplElement_watering_Stop:
+			break;
+		case eApplElement_watering_Timeout:
+			break;
+		}
+		ApplElements[foundIdx].ApplActionState = ApplActionState_Idle;
+	}
+}
+void ApplHandler_ProcessedButtons(void)
+{
+
 }

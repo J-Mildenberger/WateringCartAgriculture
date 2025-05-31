@@ -14,6 +14,9 @@
 /* Private defines -----------------------------------------------------------*/
 #define QUEUE_SIZE 32
 
+#define QUEUE_DEBUG 1
+
+
 /* Typedefs and structs ------------------------------------------------------*/
 typedef struct {
     uint8_t *buffer;         // pointer to buffer array (cast to uint8_t for generic access)
@@ -37,11 +40,10 @@ typedef struct {
  * @param capacity Number of elements (max queue length)
  */
 void MyQueue_Init(tQueue *q, void *buffer, uint32_t elementSize, uint32_t capacity, const char *pName);
-
 bool MyQueue_Enqueue(tQueue *q, const void *element);
 bool MyQueue_Dequeue(tQueue *q, void *element);
 bool MyQueue_IsEmpty(const tQueue *q);
 bool MyQueue_IsFull(const tQueue *q);
 void MyQueue_Reset(tQueue *q);
-
+bool MyQueue_Peek(tQueue *q, void *element);
 #endif /* INC_MYQUEUE_H_ */
