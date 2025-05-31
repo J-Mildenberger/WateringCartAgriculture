@@ -151,8 +151,9 @@ int main(void)
 
 	/* applicative init */
 	DrPushButton_InitButtons();
+	Appl_InitApplElements();
 	MyQueue_Init(&buttonQueue, buttonQueueBuf, sizeof(sButton), QUEUE_SIZE, "ButtonQueue");
-	MyQueue_Init(&applQueue, buttonQueueBuf, sizeof(sButton), QUEUE_SIZE, "ApplQueue");
+	MyQueue_Init(&applQueue, applQueueBuf, sizeof(sApplElement), QUEUE_SIZE, "ApplQueue");
   /* USER CODE END 2 */
 
   /* Infinite loop */
