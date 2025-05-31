@@ -67,6 +67,8 @@ void Error_Handler(void);
 /* USER CODE END EFP */
 
 /* Private defines -----------------------------------------------------------*/
+#define DOUT1_PUMP1_VALVE_Pin LL_GPIO_PIN_14
+#define DOUT1_PUMP1_VALVE_GPIO_Port GPIOC
 #define DOUT2_PUMP1_WATER_Pin LL_GPIO_PIN_2
 #define DOUT2_PUMP1_WATER_GPIO_Port GPIOC
 #define LD2_Pin LL_GPIO_PIN_5
