@@ -18,13 +18,20 @@
 /* Function prototypes ------------------------------------------------------*/
 /* Function definitions ------------------------------------------------------*/
 
-void MyQueue_Init(tQueue *q, void *buffer, uint32_t elementSize, uint32_t capacity) {
+void MyQueue_Init(tQueue *q, void *buffer, uint32_t elementSize, uint32_t capacity, const char *pName) {
     q->buffer = (uint8_t *)buffer;
     q->elementSize = elementSize;
     q->capacity = capacity;
     q->head = 0;
     q->tail = 0;
     q->count = 0;
+    // Copy name safely using memcpy and ensure null-termination
+    size_t nameLen = strlen(pName);
+    if (nameLen >= sizeof(q->name)) {
+        nameLen = sizeof(q->name) - 1;
+    }
+    memcpy(q->name, pName, nameLen);
+    q->name[nameLen] = '\0';
 }
 
 bool MyQueue_IsEmpty(const tQueue *q) {

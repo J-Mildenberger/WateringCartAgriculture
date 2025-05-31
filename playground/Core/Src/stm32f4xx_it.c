@@ -25,6 +25,7 @@
 #include "PinDefines.h"
 #include "DrPushButton.h"
 #include "DrFlowMeter.h"
+#include "Application.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/

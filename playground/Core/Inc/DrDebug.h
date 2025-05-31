@@ -20,7 +20,7 @@
         printf("[%-6lu] button#: %u | ApplWater: %s | Action: %s \r\n", \
                HAL_GetTick(), \
                ((buttonPtr)->buttonNum+1), \
-               ButtonApplicationStateWateringToString((buttonPtr)->ButtonApplState_Watering), \
+               ApplicationStateWateringToString(), \
                ButtonActionStateToString((buttonPtr)->ButtonActionState) );\
     } while (0)
 
@@ -49,7 +49,6 @@
 /* Static vars go in C file, just add extern here if needed */
 /* External variables --------------------------------------------------------*/
 /* Function declarations -----------------------------------------------------*/
-const char* ButtonApplicationStateWateringToString(
-		eButtonApplState_Watering state);
+const char* ApplicationStateWateringToString(void);
 const char* ButtonActionStateToString(eButtonActionState state);
 #endif /* SRC_DRDEBUG_H_ */

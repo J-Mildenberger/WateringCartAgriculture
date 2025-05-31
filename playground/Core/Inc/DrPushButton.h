@@ -1,4 +1,4 @@
-/*
+	/*
  * DrPushButton.h
  *
  *  Created on: May 1, 2025
@@ -28,17 +28,15 @@ typedef enum {
 	ButtonPushed,
 } eDrPushButton_ButtonState;
 typedef enum {
-	ButtonIdle ,
-	ButtonWaterAuto,
-	ButtonWaterManually,
-	FlowMeterTarget,
-	Timeout,
-} eButtonApplState_Watering;
-typedef enum {
 	ButtonActionIdle,
 	ButtonActionEnqueued,
 	ButtonActionProcessed,
 } eButtonActionState;
+typedef enum {
+	ButtonMask_Watering = 0x01,
+	ButtonMask_MotorCtrl = 0x02,
+	ButtonMask_WaterTank = 0x04,
+} eButtonMask;
 typedef struct {
 	GPIO_TypeDef *GPIOx;
 	uint16_t GPIO_Pin;
@@ -46,10 +44,9 @@ typedef struct {
 typedef struct {
 	uint8_t buttonNum;
 	sHAL_GPIO HAL_GPIO;
+	eButtonMask ButtonMask;
 	eButtonActionState ButtonActionState;
 	eDrPushButton_ButtonState buttonStateOld;
-	eButtonApplState_Watering ButtonApplState_Watering;
-	/* #TODO extend by further ButtonApplState_## - for simplicity any button includes any ButtonApplState */
 } sButton;
 
 /* External variables --------------------------------------------------------*/
@@ -58,7 +55,7 @@ extern sButton Buttons[15];
 /* Function declarations -----------------------------------------------------*/
 void DrPushButton_ButtonISR(sButton *button);
 eDrPushButton_ButtonState DrPushButton_ButtonGetState(sButton *button);
-void DrPushButton_InitResetButtons(void);
+void DrPushButton_InitButtons(void);
 
 
 #endif /* INC_DRPUSHBUTTON_H_ */

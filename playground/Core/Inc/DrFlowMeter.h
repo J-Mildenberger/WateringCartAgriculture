@@ -18,7 +18,9 @@
 
 /* Typedefs and structs ------------------------------------------------------*/
 typedef enum {
-	FlowMeter_Idle, FlowMeter_Measuring, FlowMeter_TargetReached,
+	FlowMeter_Idle,
+	FlowMeter_Measuring,
+	FlowMeter_TargetReached,
 } eDrFlowMeter;
 
 typedef struct {

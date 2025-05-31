@@ -7,23 +7,23 @@
 
 /* Includes ------------------------------------------------------------------*/
 #include "DrDebug.h"
-
+#include "Application.h"
 /* Static variables ----------------------------------------------------------*/
 /* Private function prototypes -----------------------------------------------*/
 /* Function definitions ------------------------------------------------------*/
-const char* ButtonApplicationStateWateringToString(eButtonApplState_Watering state)
+const char* ApplicationStateWateringToString(void)
 {
-	switch (state)
+	switch (ApplState_watering)
 	{
-	case ButtonIdle:
+	case ApplState_watering_Idle:
 		return "Idle";
-	case ButtonWaterAuto:
+	case ApplState_watering_Auto:
 		return "WaterAuto";
-	case ButtonWaterManually:
+	case ApplState_watering_Manually:
 		return "WaterManually";
-	case FlowMeterTarget:
+	case ApplState_watering_FlowMeterTarget:
 		return "FlowMeterTarget";
-	case Timeout:
+	case ApplState_watering_Timeout:
 		return "Timeout";
 
 	default:

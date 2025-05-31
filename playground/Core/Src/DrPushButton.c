@@ -16,6 +16,8 @@
 #include "PinDefines.h"
 #include "DrFlowMeter.h"
 #include "DrSystem.h"
+#include "MyQueue.h"
+#include "Application.h"
 /* Private defines ----------------------------------------------------------*/
 
 /* Static variables ----------------------------------------------------------*/
@@ -25,35 +27,37 @@ sButton Buttons[15];
 /* Private function prototypes -----------------------------------------------*/
 
 /* Function definitions ------------------------------------------------------*/
-void DrPushButton_InitResetButtons(void)
+void DrPushButton_InitButtons(void)
 {
-	memset(&Buttons[0], 0x00, sizeof(Buttons));
+	memset(&Buttons, 0x00, sizeof(Buttons));
 	/* Button 1
 	 * DIN1_BUTTON_WATERINGLVL_1
 	 */
-	Buttons[0].buttonNum = DIN1_BUTTON_WATERINGLVL_1;
-	Buttons[0].HAL_GPIO.GPIOx = GPIOA;
-	Buttons[0].HAL_GPIO.GPIO_Pin = GPIO_PIN_12;
-
+	Buttons[DIN1_BUTTON_WATERINGLVL_1].buttonNum = DIN1_BUTTON_WATERINGLVL_1;
+	Buttons[DIN1_BUTTON_WATERINGLVL_1].HAL_GPIO.GPIOx = GPIOA;
+	Buttons[DIN1_BUTTON_WATERINGLVL_1].HAL_GPIO.GPIO_Pin = GPIO_PIN_12;
+	Buttons[DIN1_BUTTON_WATERINGLVL_1].ButtonMask = ButtonMask_Watering;
 	/* Button 2
 	 * DIN2_BUTTON_WATERINGLVL_2
 	 */
-	Buttons[1].buttonNum = DIN2_BUTTON_WATERINGLVL_2;
-	Buttons[1].HAL_GPIO.GPIOx = GPIOA;
-	Buttons[1].HAL_GPIO.GPIO_Pin = GPIO_PIN_11;
+	Buttons[DIN2_BUTTON_WATERINGLVL_2].buttonNum = DIN2_BUTTON_WATERINGLVL_2;
+	Buttons[DIN2_BUTTON_WATERINGLVL_2].HAL_GPIO.GPIOx = GPIOA;
+	Buttons[DIN2_BUTTON_WATERINGLVL_2].HAL_GPIO.GPIO_Pin = GPIO_PIN_11;
+	Buttons[DIN2_BUTTON_WATERINGLVL_2].ButtonMask = ButtonMask_Watering;
 	/* Button 3
 	 * DIN3_BUTTON_CTRL_PUMP_1
 	 */
-	Buttons[2].buttonNum = DIN3_BUTTON_CTRL_PUMP_1;
-	Buttons[2].HAL_GPIO.GPIOx = GPIOB;
-	Buttons[2].HAL_GPIO.GPIO_Pin = GPIO_PIN_12;
+	Buttons[DIN3_BUTTON_CTRL_PUMP_1].buttonNum = DIN3_BUTTON_CTRL_PUMP_1;
+	Buttons[DIN3_BUTTON_CTRL_PUMP_1].HAL_GPIO.GPIOx = GPIOB;
+	Buttons[DIN3_BUTTON_CTRL_PUMP_1].HAL_GPIO.GPIO_Pin = GPIO_PIN_12;
+	Buttons[DIN3_BUTTON_CTRL_PUMP_1].ButtonMask = ButtonMask_Watering;
 
 	/* Button 12
 	 * DIN11_BUTTON_EVALUSER
 	 */
-	Buttons[12].buttonNum = DIN11_BUTTON_EVALUSER;
-	Buttons[12].HAL_GPIO.GPIOx = GPIOC;
-	Buttons[12].HAL_GPIO.GPIO_Pin = GPIO_PIN_13;
+	Buttons[DIN11_BUTTON_EVALUSER].buttonNum = DIN11_BUTTON_EVALUSER;
+	Buttons[DIN11_BUTTON_EVALUSER].HAL_GPIO.GPIOx = GPIOC;
+	Buttons[DIN11_BUTTON_EVALUSER].HAL_GPIO.GPIO_Pin = GPIO_PIN_13;
 
 }
 
@@ -78,7 +82,7 @@ void DrPushButton_ButtonReleasedCB(sButton *button)
 	if (button->ButtonActionState == ButtonActionIdle)
 	{
 		button->ButtonActionState = ButtonActionEnqueued;
-		Appl_notify();
+		MyQueue_Enqueue(&buttonQueue,button);
 		DBG_PRINT_BUTTON(button);
 	}
 }
@@ -86,27 +90,6 @@ void DrPushButton_ButtonReleasedCB(sButton *button)
 void DrPushButton_ButtonPushedCB(sButton *button)
 {
 	DBG_PRINT_BUTTON(button);
-	switch (button->ButtonApplState_Watering)
-	{
-	case ButtonIdle:
-		// Your code for ButtonIdle
-		break;
-	case ButtonWaterAuto:
-		// Your code for ButtonWaterLvl_1
-		break;
-	case ButtonWaterManually:
-		// Your code for ButtonWaterManually
-		break;
-	case FlowMeterTarget:
-
-		break;
-	case Timeout:
-
-		break;
-	default:
-		DBG_PRINT("**!!case default reached!!**");
-		break;
-	}
 }
 #if (DRPUSHBUTTON_TEST == 1)
 extern volatile uint8_t exti12_sw_triggered;
@@ -136,9 +119,6 @@ void DrPushButton_ButtonISR(sButton *button)
 		}
 	}
 #endif
-
-	//DBG_PRINT("button# %u | StateOld: %u | State %u ", (uint32_t)button->buttonNum, (uint32_t)button->buttonStateOld, (uint32_t)tempButtonState);
-
 	// Check if the button state has changed
 	if (tempButtonState != button->buttonStateOld)
 	{
@@ -148,13 +128,13 @@ void DrPushButton_ButtonISR(sButton *button)
 		// Handle button release
 		if (button->buttonStateOld == ButtonReleased)
 		{
-			DBG_PRINT("buttonNum: %u RELEASED", (button->buttonNum)+1);
+			DBG_PRINT("buttonNum: %lu RELEASED", (button->buttonNum)+1);
 			DrPushButton_ButtonReleasedCB(button);
 		}
 		// Handle button push
 		else if (button->buttonStateOld == ButtonPushed)
 		{
-			DBG_PRINT("buttonNum: %u PUSHED", (button->buttonNum)+1);
+			DBG_PRINT("buttonNum: %lu PUSHED", (button->buttonNum)+1);
 			DrPushButton_ButtonPushedCB(button);
 		}
 	}

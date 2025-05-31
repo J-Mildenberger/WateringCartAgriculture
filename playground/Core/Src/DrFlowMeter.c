@@ -53,19 +53,19 @@ void DrFlowMeter_SetTarget(sDrFlowMeter *flowMeter, uint32_t increment)
 {
 	if (flowMeter->state == FlowMeter_TargetReached)
 	{
-		DBG_PRINT("ERR CANNOT SET FLOWMETER TARGET WHILE REACHED: %u",
+		DBG_PRINT("ERR CANNOT SET FLOWMETER TARGET WHILE REACHED: %lu",
 				flowMeter->pulseCount_target);
 		return;
 	}
 	if (((flowMeter->pulseCount_target) + increment) <= TARGET_CNT_LIMIT)
 	{
 		flowMeter->pulseCount_target += increment;
-		DBG_PRINT("SET FLOWMETER TARGET: %u __ current: %u",
+		DBG_PRINT("SET FLOWMETER TARGET: %lu __ current: %lu",
 				flowMeter->pulseCount_target, flowMeter->pulseCount_current);
 	}
 	else
 	{
-		DBG_PRINT("ERR CANNOT SET FLOWMETER TARGET: %u __ current: %u __ incr: %u",
+		DBG_PRINT("ERR CANNOT SET FLOWMETER TARGET: %lu __ current: %lu __ incr: %lu",
 				flowMeter->pulseCount_target, flowMeter->pulseCount_current, increment);
 	}
 	return;
