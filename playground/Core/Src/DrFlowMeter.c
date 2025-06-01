@@ -38,15 +38,20 @@ void DrFlowMeter_StartMeasure(sDrFlowMeter *flowMeter, uint32_t targetCnt)
  */
 void DrFlowMeter_PulseCounterCB(sDrFlowMeter *flowMeter)
 {
-	if (flowMeter->state == FlowMeter_Measuring)
+#if (FLOWMETER_DEBUG == 1)
+	static uint32_t delta = 0;
+	delta++;
+	if (delta >= DEBUG_FLOWPULSES_NUM)
 	{
-		flowMeter->pulseCount_current += 1;
-		if (flowMeter->pulseCount_current >= flowMeter->pulseCount_target)
-		{
-			flowMeter->state = FlowMeter_TargetReached;
-			/* To reduce complexity and multiple application modes,
-			 Valve appl. polls for FlowMeter_TargetReached */
-		}
+		DBG_PRINT("Flowmeter current sum of pulses _ %lu _ ",
+				flowMeter->pulseCount_current);
+		delta = 0;
+	}
+#endif
+	flowMeter->pulseCount_current += 1;
+	if (flowMeter->pulseCount_current >= flowMeter->pulseCount_target)
+	{
+		flowMeter->state = FlowMeter_TargetReached;		/* Appl. polls for FlowMeter_TargetReached */
 	}
 }
 
@@ -66,8 +71,10 @@ void DrFlowMeter_SetTarget(sDrFlowMeter *flowMeter, uint32_t increment)
 	}
 	else
 	{
-		DBG_PRINT("ERR CANNOT SET FLOWMETER TARGET: %lu __ current: %lu __ incr: %lu",
-				flowMeter->pulseCount_target, flowMeter->pulseCount_current, increment);
+		DBG_PRINT(
+				"ERR CANNOT SET FLOWMETER TARGET: %lu __ current: %lu __ incr: %lu",
+				flowMeter->pulseCount_target, flowMeter->pulseCount_current,
+				increment);
 	}
 	return;
 }

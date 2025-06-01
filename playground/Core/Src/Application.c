@@ -27,7 +27,7 @@ tQueue applQueue;
 sButton buttonQueueBuf[QUEUE_SIZE];
 sApplElement applQueueBuf[QUEUE_SIZE];
 /* Static variables ----------------------------------------------------------*/
-static sDrTimer_Timer Timer_Valve1;
+
 /* Private function prototypes -----------------------------------------------*/
 void ApplHandler_WateringButtons(sButton *pButton);
 bool ApplHandler_CheckFlowMeterTargetReached(sDrFlowMeter *pFlowMeter);
@@ -44,7 +44,7 @@ static bool IsPump1_active(void)
 {
 	if (DOUT_RELAIS_ACTIVE
 			== LL_GPIO_IsOutputPinSet(DOUT2_PUMP1_WATER_GPIO_Port,
-					DOUT2_PUMP1_WATER_Pin))
+			DOUT2_PUMP1_WATER_Pin))
 	{
 		return true;
 	}
@@ -54,7 +54,7 @@ static bool IsValve1_open(void)
 {
 	if (DOUT_RELAIS_ACTIVE
 			== LL_GPIO_IsOutputPinSet(DOUT1_PUMP1_VALVE_GPIO_Port,
-					DOUT1_PUMP1_VALVE_Pin))
+			DOUT1_PUMP1_VALVE_Pin))
 	{
 		return true;
 	}
@@ -65,42 +65,42 @@ static void SetPump1_active(void)
 	DBG_PRINT("SetPump1_active");
 	(DOUT_RELAIS_ACTIVE == 1) ?
 			LL_GPIO_SetOutputPin(DOUT2_PUMP1_WATER_GPIO_Port,
-					DOUT2_PUMP1_WATER_Pin) :
+			DOUT2_PUMP1_WATER_Pin) :
 			LL_GPIO_ResetOutputPin(DOUT2_PUMP1_WATER_GPIO_Port,
-					DOUT2_PUMP1_WATER_Pin);
+			DOUT2_PUMP1_WATER_Pin);
 }
 static void SetPump1_inactive(void)
 {
 	DBG_PRINT("SetPump1_inactive");
 	(DOUT_RELAIS_ACTIVE == 1) ?
 			LL_GPIO_ResetOutputPin(DOUT2_PUMP1_WATER_GPIO_Port,
-					DOUT2_PUMP1_WATER_Pin) :
+			DOUT2_PUMP1_WATER_Pin) :
 			LL_GPIO_SetOutputPin(DOUT2_PUMP1_WATER_GPIO_Port,
-					DOUT2_PUMP1_WATER_Pin);
+			DOUT2_PUMP1_WATER_Pin);
 }
 static void SetValve1_open(void)
 {
 	DBG_PRINT("SetValve1_open");
 	(DOUT_RELAIS_ACTIVE == 1) ?
 			LL_GPIO_SetOutputPin(DOUT1_PUMP1_VALVE_GPIO_Port,
-					DOUT1_PUMP1_VALVE_Pin) :
+			DOUT1_PUMP1_VALVE_Pin) :
 			LL_GPIO_ResetOutputPin(DOUT1_PUMP1_VALVE_GPIO_Port,
-					DOUT1_PUMP1_VALVE_Pin);
+			DOUT1_PUMP1_VALVE_Pin);
 }
 static void SetValve1_closed(void)
 {
 	DBG_PRINT("SetValve1_closed");
 	(DOUT_RELAIS_ACTIVE == 1) ?
 			LL_GPIO_ResetOutputPin(DOUT1_PUMP1_VALVE_GPIO_Port,
-					DOUT1_PUMP1_VALVE_Pin) :
+			DOUT1_PUMP1_VALVE_Pin) :
 			LL_GPIO_SetOutputPin(DOUT1_PUMP1_VALVE_GPIO_Port,
-					DOUT1_PUMP1_VALVE_Pin);
+			DOUT1_PUMP1_VALVE_Pin);
 }
 
 /* @brief: return true if (valve == open) & (pump1 == active),
  * otherwise returns false. To be called cyclically until returning true.
  */
-static bool WateringMechanism_Start(void)
+static void WateringMechanism_Start(void)
 {
 	SetValve1_open();
 
@@ -108,30 +108,10 @@ static bool WateringMechanism_Start(void)
 	if (IsValve1_open()) /* backup safety */
 	{
 		SetPump1_active();
-		return true;
 	}
-	return false;
-
-//	static uint8_t once = 1;
-//	if (once)
-//	{
-//		DrTimer_StartTimer(&Timer_Valve1, PUMP1_VALVE1_DELAY);
-//		Timer_Valve1.timMode = eTimMode_ONESHOT;
-//	}
-//
-//	if (DrTimer_IsTimerOver(&Timer_Valve1))
-//	{
-//		if (IsValve1_open()) /* backup safety */
-//		{
-//			SetPump1_active();
-//		}
-//		once = 1;
-//		return true;
-//	}
-//	return false;
 }
 
-static bool WateringMechanism_Stop(void)
+static void WateringMechanism_Stop(void)
 {
 	SetPump1_inactive();
 
@@ -139,27 +119,7 @@ static bool WateringMechanism_Stop(void)
 	if (IsPump1_active() == false)
 	{
 		SetValve1_closed();
-		return true;
 	}
-	return false;
-//
-//	static uint8_t once = 1;
-//	if (once)
-//	{
-//		DrTimer_StartTimer(&Timer_Valve1, PUMP1_VALVE1_DELAY);
-//		Timer_Valve1.timMode = eTimMode_ONESHOT;
-//	}
-//
-//	if (DrTimer_IsTimerOver(&Timer_Valve1))
-//	{
-//		if (IsPump1_active() == false)
-//		{
-//			SetValve1_closed();
-//		}
-//		once = 1;
-//		return true;
-//	}
-//	return false;
 }
 
 void ApplHandler_SetWateringState(eApplState_watering state)
@@ -253,8 +213,6 @@ void ApplHandler_WateringButtons(sButton *pButton)
 			ApplHandler_SetWateringState(eApplElement_watering_Manually);
 			MyQueue_Enqueue(&applQueue,
 					&ApplElements[eApplElement_watering_Manually]);
-			ApplElements[eApplElement_watering_Manually].ApplActionState =
-					ApplActionState_Enqueued;
 			//wenn der DIN3 gedrückt wird gehts auf Manually.
 			//wenn der Applikative Handler das manually element abvespert schaut er auf
 			//den Zustand der Pumpe - wenn die offen ist: weiter so; wenn die zu ist: öffnen.
@@ -273,12 +231,9 @@ void ApplHandler_WateringButtons(sButton *pButton)
 
 		ApplHandler_SetWateringState(ApplState_watering_Auto);
 		MyQueue_Enqueue(&applQueue, &ApplElements[eApplElement_watering_Auto]);
-		ApplElements[eApplElement_watering_Auto].ApplActionState =
-				ApplActionState_Enqueued;
 		MyQueue_Enqueue(&applQueue,
 				&ApplElements[eApplElement_FlowMeterTarget]);
-		ApplElements[eApplElement_FlowMeterTarget].ApplActionState =
-				ApplActionState_Enqueued;
+
 		break;
 
 	case ApplState_watering_Auto:
@@ -344,44 +299,41 @@ void ApplHandler_Watering(void)
 		{
 		case eApplElement_watering_Auto:
 			// Start watering mechanism: open valve -> start pump
-			if (WateringMechanism_Start() == true)
-			{
-				ApplElements[eApplElement_watering_Auto].ApplActionState =
-						ApplActionState_Processed;
-			}
+			WateringMechanism_Start();
+			ApplElements[eApplElement_watering_Auto].ApplActionState =
+					ApplActionState_Processed;
+
+			//#TODO Timer Timeout INT START
 
 			break;
 
 		case eApplElement_FlowMeterTarget:
 		{
 			bool reached = ApplHandler_CheckFlowMeterTargetReached(&FlowMeter1);
-			if (!reached)
-			{
-				MyQueue_Enqueue(&applQueue,
-						&ApplElements[eApplElement_FlowMeterTarget]);
-				ApplElements[eApplElement_FlowMeterTarget].ApplActionState =
-						ApplActionState_Enqueued;
-			}
-			else
+			if (reached)
 			{
 				ApplElements[eApplElement_FlowMeterTarget].ApplActionState =
 						ApplActionState_Processed;
 
 				MyQueue_Enqueue(&applQueue,
 						&ApplElements[eApplElement_watering_Stop]);
-				ApplElements[eApplElement_watering_Stop].ApplActionState =
-						ApplActionState_Enqueued;
+			}
+			else if (!reached)
+			{
+				MyQueue_Enqueue(&applQueue,
+						&ApplElements[eApplElement_FlowMeterTarget]);
 			}
 			break;
 		}
 
 		case eApplElement_watering_Stop:
 			// Stop watering mechanism
-			if (WateringMechanism_Stop() == true)
-			{
-				ApplElements[eApplElement_watering_Stop].ApplActionState =
-						ApplActionState_Processed;
-			}
+			WateringMechanism_Stop();
+
+			ApplElements[eApplElement_watering_Stop].ApplActionState =
+					ApplActionState_Processed;
+
+			//#TODO Timer Timeout STOP
 
 			break;
 
@@ -391,11 +343,9 @@ void ApplHandler_Watering(void)
 
 		case eApplElement_watering_Manually:
 			// Start watering mechanism: open valve -> start pump
-			if (WateringMechanism_Start() == true)
-			{
-				ApplElements[eApplElement_watering_Manually].ApplActionState =
-														ApplActionState_Processed;
-			}
+			WateringMechanism_Start();
+			ApplElements[eApplElement_watering_Manually].ApplActionState =
+					ApplActionState_Processed;
 		default:
 			DBG_PRINT("Unhandled ApplElement: %d", ApplElToProcess.ApplElement);
 			break;
@@ -407,6 +357,7 @@ bool ApplHandler_CheckFlowMeterTargetReached(sDrFlowMeter *pFlowMeter)
 {
 	if (pFlowMeter->pulseCount_current >= pFlowMeter->pulseCount_target)
 	{
+		pFlowMeter->state = FlowMeter_TargetReached;
 		DBG_PRINT("REACHED FLOWMETER TARGET: %lu __ current: %lu",
 				pFlowMeter->pulseCount_target, pFlowMeter->pulseCount_current);
 		return true;

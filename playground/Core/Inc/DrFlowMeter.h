@@ -12,6 +12,9 @@
 #include "stdint.h"
 
 /* Private defines -----------------------------------------------------------*/
+#define FLOWMETER_DEBUG 1
+#define DEBUG_FLOWPULSES_NUM 3
+
 #define TARGET_CNT_LVL1 500u  /* 10 Liters */
 #define TARGET_CNT_LVL2 1000u /* 20 Liters */
 #define TARGET_CNT_LIMIT (6*TARGET_CNT_LVL2)
