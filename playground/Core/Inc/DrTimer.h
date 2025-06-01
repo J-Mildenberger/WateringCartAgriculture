@@ -10,6 +10,7 @@
 
 /* Includes ------------------------------------------------------------------*/
 #include "stdint.h"
+#include "stdbool.h"
 #include "stm32f4xx_hal.h"
 /* Private defines -----------------------------------------------------------*/
 
@@ -24,6 +25,7 @@ typedef struct {
 	eTimMode timMode;
 	uint32_t startTime;
 	uint32_t delay_ms;
+	bool active;
 } sDrTimer_Timer;
 
 typedef struct {
