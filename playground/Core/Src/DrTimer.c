@@ -8,11 +8,12 @@
 /* Includes ------------------------------------------------------------------*/
 #include "DrTimer.h"
 #include "stm32f4xx_hal.h"
-
+#include "DrDebug.h"
 /* Static variables ----------------------------------------------------------*/
 /* Private function prototypes -----------------------------------------------*/
 /* Function definitions ------------------------------------------------------*/
 void DrTimer_TimDelay(uint32_t delay_ms) {
+	DBG_PRINT("HAL_Delay _%lu_ ...", delay_ms);
 	HAL_Delay(delay_ms);
 }
 

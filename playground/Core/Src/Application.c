@@ -102,46 +102,64 @@ static void SetValve1_closed(void)
  */
 static bool WateringMechanism_Start(void)
 {
-	static uint8_t once = 1;
-	if (once)
-	{
-		SetValve1_open();
-		DrTimer_StartTimer(&Timer_Valve1, PUMP1_VALVE1_DELAY);
-		Timer_Valve1.timMode = eTimMode_ONESHOT;
-	}
+	SetValve1_open();
 
-	if (DrTimer_IsTimerOver(&Timer_Valve1))
+	DrTimer_TimDelay(PUMP1_VALVE1_DELAY);
+	if (IsValve1_open()) /* backup safety */
 	{
-		if (IsValve1_open()) /* backup safety */
-		{
-			SetPump1_active();
-		}
-		once = 1;
+		SetPump1_active();
 		return true;
 	}
 	return false;
+
+//	static uint8_t once = 1;
+//	if (once)
+//	{
+//		DrTimer_StartTimer(&Timer_Valve1, PUMP1_VALVE1_DELAY);
+//		Timer_Valve1.timMode = eTimMode_ONESHOT;
+//	}
+//
+//	if (DrTimer_IsTimerOver(&Timer_Valve1))
+//	{
+//		if (IsValve1_open()) /* backup safety */
+//		{
+//			SetPump1_active();
+//		}
+//		once = 1;
+//		return true;
+//	}
+//	return false;
 }
 
 static bool WateringMechanism_Stop(void)
 {
-	static uint8_t once = 1;
-	if (once)
-	{
-		SetPump1_inactive();
-		DrTimer_StartTimer(&Timer_Valve1, PUMP1_VALVE1_DELAY);
-		Timer_Valve1.timMode = eTimMode_ONESHOT;
-	}
+	SetPump1_inactive();
 
-	if (DrTimer_IsTimerOver(&Timer_Valve1))
+	DrTimer_TimDelay(PUMP1_VALVE1_DELAY);
+	if (IsPump1_active() == false)
 	{
-		if (IsPump1_active() == false)
-		{
-			SetValve1_closed();
-		}
-		once = 1;
+		SetValve1_closed();
 		return true;
 	}
 	return false;
+//
+//	static uint8_t once = 1;
+//	if (once)
+//	{
+//		DrTimer_StartTimer(&Timer_Valve1, PUMP1_VALVE1_DELAY);
+//		Timer_Valve1.timMode = eTimMode_ONESHOT;
+//	}
+//
+//	if (DrTimer_IsTimerOver(&Timer_Valve1))
+//	{
+//		if (IsPump1_active() == false)
+//		{
+//			SetValve1_closed();
+//		}
+//		once = 1;
+//		return true;
+//	}
+//	return false;
 }
 
 void ApplHandler_SetWateringState(eApplState_watering state)
@@ -328,11 +346,8 @@ void ApplHandler_Watering(void)
 			// Start watering mechanism: open valve -> start pump
 			if (WateringMechanism_Start() == true)
 			{
-
-			}
-			else
-			{
-				// do nothing - call cyclically until valve open and pump active
+				ApplElements[eApplElement_watering_Auto].ApplActionState =
+						ApplActionState_Processed;
 			}
 
 			break;
@@ -362,6 +377,12 @@ void ApplHandler_Watering(void)
 
 		case eApplElement_watering_Stop:
 			// Stop watering mechanism
+			if (WateringMechanism_Stop() == true)
+			{
+				ApplElements[eApplElement_watering_Stop].ApplActionState =
+						ApplActionState_Processed;
+			}
+
 			break;
 
 		case eApplElement_watering_Timeout:
@@ -370,8 +391,11 @@ void ApplHandler_Watering(void)
 
 		case eApplElement_watering_Manually:
 			// Start watering mechanism: open valve -> start pump
-			break;
-
+			if (WateringMechanism_Start() == true)
+			{
+				ApplElements[eApplElement_watering_Manually].ApplActionState =
+														ApplActionState_Processed;
+			}
 		default:
 			DBG_PRINT("Unhandled ApplElement: %d", ApplElToProcess.ApplElement);
 			break;
@@ -419,8 +443,12 @@ void ApplHandler_ProcessedApplEls(void)
 		case eApplElement_watering_Auto:
 			break;
 		case eApplElement_watering_Stop:
+			ApplHandler_SetWateringState(ApplState_watering_Idle);
 			break;
 		case eApplElement_watering_Timeout:
+			break;
+		case eApplElement_watering_Manually:
+			ApplHandler_SetWateringState(ApplState_watering_Idle);
 			break;
 		}
 		ApplElements[foundIdx].ApplActionState = ApplActionState_Idle;
