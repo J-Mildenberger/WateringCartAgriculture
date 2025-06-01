@@ -17,7 +17,12 @@
 #include "MyQueue.h"
 #include "DrFlowMeter.h"
 /* Private defines -----------------------------------------------------------*/
+
+#define DOUT_RELAIS_ACTIVE 0u
+#define PUMP1_VALVE1_DELAY 650u
 /* Typedefs and structs ------------------------------------------------------*/
+
+/* high-layer state-machine for watering */
 typedef enum {
     ApplState_watering_Idle,
     ApplState_watering_Auto,
@@ -25,17 +30,21 @@ typedef enum {
     ApplState_watering_FlowMeterTarget,
     ApplState_watering_Timeout
 } eApplState_watering;
-typedef enum {
-	ApplActionState_Idle,
-	ApplActionState_Enqueued,
-	ApplActionState_Processed,
-} eApplActionState;
+/* watering application elements for enqueue */
 typedef enum {
 	eApplElement_FlowMeterTarget = 0,
 	eApplElement_watering_Auto = 1,
 	eApplElement_watering_Stop = 2,
 	eApplElement_watering_Timeout = 3,
+	eApplElement_watering_Manually = 4,
 } eApplElement;
+/* status info of the application elements */
+typedef enum {
+	ApplActionState_Idle,
+	ApplActionState_Enqueued,
+	ApplActionState_Processed,
+} eApplActionState;
+/* struct: application elements */
 typedef struct {
 	eApplActionState ApplActionState;
 	eApplElement	ApplElement;
@@ -48,7 +57,7 @@ extern tQueue buttonQueue;
 extern sApplElement applQueueBuf[QUEUE_SIZE];
 extern tQueue applQueue;
 /* Function declarations -----------------------------------------------------*/
-
+void ApplHandler_SetWateringState(eApplState_watering state);
 void Appl_InitApplElements(void);
 bool ApplHandler_CheckFlowMeterTargetReached(sDrFlowMeter *pFlowMeter);
 void ApplHandler_WateringButtons(sButton *pButton);

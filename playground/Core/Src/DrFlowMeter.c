@@ -29,6 +29,7 @@ void DrFlowMeter_StartMeasure(sDrFlowMeter *flowMeter, uint32_t targetCnt)
 	flowMeter->pulseCount_current = 0;
 	flowMeter->pulseCount_target = targetCnt;
 	flowMeter->state = FlowMeter_Measuring;
+	DBG_PRINT("Start Measure target_ %lu", flowMeter->pulseCount_target);
 }
 
 /* @brief Call this Function by FlowMeter Pulse Interrupt Routine.
