@@ -17,7 +17,7 @@
 /* watering Buttons */
 #define DIN1_BUTTON_WATERINGLVL_1 					(1 - 1) //PA12
 #define DIN2_BUTTON_WATERINGLVL_2 					(2	- 1)//PA11
-#define DIN3_BUTTON_CTRL_PUMP_1 					(3	- 1)//PB12
+#define DIN3_BUTTON_CTRL_PUMP_1 					(3	- 1)//PB9
 #define DIN10_FLOWMETER_DETECT 						(10	- 1)//PB13
 /* motorCTRL Buttons */
 #define DIN4_BUTTON_RETRACT_WATERINGARM_VERT_FULL 	(4	- 1)//PB2

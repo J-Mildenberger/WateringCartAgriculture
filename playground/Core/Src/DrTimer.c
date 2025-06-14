@@ -11,6 +11,7 @@
 #include "stm32f4xx_hal_tim.h"
 #include "DrDebug.h"
 #include "Application.h"
+#include "tim.h"
 /* Static variables ----------------------------------------------------------*/
 /* Private function prototypes -----------------------------------------------*/
 /* Function definitions ------------------------------------------------------*/
@@ -52,13 +53,13 @@ uint32_t DrTimer_StopwatchElapsed(sDrTimer_Stopwatch *stopwatch) {
 }
 
 
-volatile uint8_t overflow_count = 0;
+volatile uint32_t overflow_count = 0;
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 {
     if (htim->Instance == TIM4)
     {
         overflow_count++;
-        if (overflow_count >= WATERING_WDG_TIME)
+        if ((overflow_count*1000) >= WATERING_WDG_TIME)
         {
             overflow_count = 0;
             Appl_WateringWatchdogHit();

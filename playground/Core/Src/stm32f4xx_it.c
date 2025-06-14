@@ -252,7 +252,13 @@ void EXTI2_IRQHandler(void)
 void EXTI9_5_IRQHandler(void)
 {
   /* USER CODE BEGIN EXTI9_5_IRQn 0 */
-
+	volatile uint32_t reg = EXTI->PR;
+	if (reg & LL_EXTI_LINE_9)
+	{
+		LL_EXTI_ClearFlag_0_31(LL_EXTI_LINE_9);
+		DrPushButton_ButtonISR(&Buttons[DIN3_BUTTON_CTRL_PUMP_1]);
+		return;
+	}
   /* USER CODE END EXTI9_5_IRQn 0 */
   if (LL_EXTI_IsActiveFlag_0_31(LL_EXTI_LINE_6) != RESET)
   {

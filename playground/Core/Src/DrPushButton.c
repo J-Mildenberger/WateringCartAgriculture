@@ -49,7 +49,7 @@ void DrPushButton_InitButtons(void)
 	 */
 	Buttons[DIN3_BUTTON_CTRL_PUMP_1].buttonNum = DIN3_BUTTON_CTRL_PUMP_1;
 	Buttons[DIN3_BUTTON_CTRL_PUMP_1].HAL_GPIO.GPIOx = GPIOB;
-	Buttons[DIN3_BUTTON_CTRL_PUMP_1].HAL_GPIO.GPIO_Pin = GPIO_PIN_12;
+	Buttons[DIN3_BUTTON_CTRL_PUMP_1].HAL_GPIO.GPIO_Pin = GPIO_PIN_9;
 	Buttons[DIN3_BUTTON_CTRL_PUMP_1].ButtonMask = ButtonMask_Watering;
 
 	/* Button 12
@@ -96,9 +96,13 @@ void DrPushButton_ButtonReleasedCB(sButton *pButton)
 	}
 }
 
-void DrPushButton_ButtonPushedCB(sButton *button)
+void DrPushButton_ButtonPushedCB(sButton *pButton)
 {
-	DBG_PRINT_BUTTON(button);
+	if (pButton->buttonNum == DIN3_BUTTON_CTRL_PUMP_1)
+	{
+		MyQueue_Enqueue(&buttonQueue, pButton);
+	}
+	DBG_PRINT_BUTTON(pButton);
 }
 #if (DRPUSHBUTTON_TEST == 1)
 extern volatile uint8_t exti12_sw_triggered;

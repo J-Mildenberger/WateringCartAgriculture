@@ -7,7 +7,7 @@ PC5		N
 -
 PA12	Y		DIN1 #define "TREE_WATER_LVL1"
 PA11    Y       DIN2 #define "TREE_WATER_LVL2"
-PB12    Y       DIN3 #define "PUMP 1 ON / OFF" "wenn high > 1.5sek dann pumpe auf solange HIGH"
+PB12    Y       
 -
 -
 PB2		Y		DIN4 #define "Gießarm vollständig einfahren" (mit Licht aktiv signalisiert)
@@ -24,7 +24,7 @@ CN10____5V_______Functionality__
 _CN9____5V____Functionality__
 PC9		Y		
 PB8		Y		
-PB9		Y		
+PB9		Y		DIN3 #define "PUMP 1 ON / OFF" "wenn high > 1.5sek dann pumpe auf solange HIGH"
 -			
 -			
 PA5		X		

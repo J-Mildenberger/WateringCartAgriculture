@@ -80,6 +80,12 @@ void MX_GPIO_Init(void)
   LL_GPIO_Init(LD2_GPIO_Port, &GPIO_InitStruct);
 
   /**/
+  GPIO_InitStruct.Pin = DIN3_BUTTON_CTRL_PUMP_1_Pin;
+  GPIO_InitStruct.Mode = LL_GPIO_MODE_INPUT;
+  GPIO_InitStruct.Pull = LL_GPIO_PULL_DOWN;
+  LL_GPIO_Init(DIN3_BUTTON_CTRL_PUMP_1_GPIO_Port, &GPIO_InitStruct);
+
+  /**/
   LL_SYSCFG_SetEXTISource(LL_SYSCFG_EXTI_PORTB, LL_SYSCFG_EXTI_LINE1);
 
   /**/

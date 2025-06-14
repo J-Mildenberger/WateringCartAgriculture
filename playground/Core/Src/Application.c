@@ -42,8 +42,6 @@ static void SetValve1_closed(void);
 static void Appl_WateringWatchdogStart(void);
 static void Appl_WateringWatchdogStop(void);
 
-
-
 static bool IsPump1_active(void)
 {
 	if (DOUT_RELAIS_ACTIVE
@@ -212,6 +210,7 @@ void ApplHandler_WateringButtons(sButton *pButton)
 	case ApplState_watering_Idle:
 
 		/* Manual pump watering */
+	{
 		if (pButton->buttonNum == DIN3_BUTTON_CTRL_PUMP_1)
 		{
 			ApplHandler_SetWateringState(eApplElement_watering_Manually);
@@ -221,25 +220,29 @@ void ApplHandler_WateringButtons(sButton *pButton)
 			//wenn der Applikative Handler das manually element abvespert schaut er auf
 			//den Zustand der Pumpe - wenn die offen ist: weiter so; wenn die zu ist: öffnen.
 			//wenn der DIN3 released wird, wird die Pumpe geschlossen.
+
+			break;
 		}
+	}
 
 		/* auto watering */
-		if (pButton->buttonNum == DIN1_BUTTON_WATERINGLVL_1)
 		{
-			DrFlowMeter_StartMeasure(&FlowMeter1, TARGET_CNT_LVL1);
+			if (pButton->buttonNum == DIN1_BUTTON_WATERINGLVL_1)
+			{
+				DrFlowMeter_StartMeasure(&FlowMeter1, TARGET_CNT_LVL1);
+			}
+			else if (pButton->buttonNum == DIN2_BUTTON_WATERINGLVL_2)
+			{
+				DrFlowMeter_StartMeasure(&FlowMeter1, TARGET_CNT_LVL2);
+			}
+
+			ApplHandler_SetWateringState(ApplState_watering_Auto);
+			MyQueue_Enqueue(&applQueue,
+					&ApplElements[eApplElement_watering_Auto]);
+			MyQueue_Enqueue(&applQueue,
+					&ApplElements[eApplElement_FlowMeterTarget]);
+			break;
 		}
-		else if (pButton->buttonNum == DIN2_BUTTON_WATERINGLVL_2)
-		{
-			DrFlowMeter_StartMeasure(&FlowMeter1, TARGET_CNT_LVL2);
-		}
-
-		ApplHandler_SetWateringState(ApplState_watering_Auto);
-		MyQueue_Enqueue(&applQueue, &ApplElements[eApplElement_watering_Auto]);
-		MyQueue_Enqueue(&applQueue,
-				&ApplElements[eApplElement_FlowMeterTarget]);
-
-		break;
-
 	case ApplState_watering_Auto:
 		if (pButton->buttonNum == DIN1_BUTTON_WATERINGLVL_1)
 		{
@@ -254,6 +257,13 @@ void ApplHandler_WateringButtons(sButton *pButton)
 
 	case ApplState_watering_Manually:
 		// handle manual watering
+		if (pButton->buttonNum == DIN3_BUTTON_CTRL_PUMP_1)
+		{
+			ApplHandler_SetWateringState(ApplState_watering_Idle);
+			MyQueue_Enqueue(&applQueue,
+					&ApplElements[eApplElement_watering_Stop]);
+			break;
+		}
 		break;
 
 	default:
@@ -419,14 +429,13 @@ void Appl_WateringWatchdogHit(void)
 	WateringMechanism_Stop();
 
 	// enqueue the Stop ApplElement for Queue Handlling
-	MyQueue_Enqueue(&applQueue,
-			&ApplElements[eApplElement_watering_Stop]);
+	MyQueue_Enqueue(&applQueue, &ApplElements[eApplElement_watering_Stop]);
 }
 
 /* TIM4 OneShot Timer */
 static void Appl_WateringWatchdogStart(void)
 {
-	 Start_TIM4_OneShot();
+	Start_TIM4_OneShot();
 }
 /* TIM4 OneShot Timer */
 static void Appl_WateringWatchdogStop(void)

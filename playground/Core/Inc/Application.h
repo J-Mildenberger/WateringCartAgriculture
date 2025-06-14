@@ -19,10 +19,9 @@
 /* Private defines -----------------------------------------------------------*/
 
 #define DOUT_RELAIS_ACTIVE 0 /* Level which represents the actual logic active */
-#define PUMP1_VALVE1_DELAY 650
+#define PUMP1_VALVE1_DELAY 650 /* [in ms] */
 
-#define WATERING_WDG_TIME  	12.5 /* in seconds - rounded down to 2.5 */
-#define WATERING_WDG_TIME_CALC = (WATERING_WDG_TIME / (2.5)) /* in 2.5 seconds steps e.g. 72 * 2.5s = 180s */
+#define WATERING_WDG_TIME  	12500 /* in milliseconds  (rounded down to 2.5) */
 
 #if WATERING_WDG_TIME < 30
 #warning WATERING_WDG_TIME is rather small!
