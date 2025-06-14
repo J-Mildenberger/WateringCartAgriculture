@@ -39,6 +39,10 @@ static void SetPump1_active(void);
 static void SetPump1_inactive(void);
 static void SetValve1_open(void);
 static void SetValve1_closed(void);
+static void Appl_WateringWatchdogStart(void);
+static void Appl_WateringWatchdogStop(void);
+
+
 
 static bool IsPump1_active(void)
 {
@@ -144,7 +148,7 @@ void Appl_InitApplElements(void)
 			eApplElement_watering_Stop;
 }
 
-void Appl_Processed_to_Idle(void)
+void ApplHandler_Processed_to_Idle(void)
 {
 	for (uint8_t i = 0; i < ARRAY_COUNT(Buttons); i++)
 	{
@@ -303,8 +307,7 @@ void ApplHandler_Watering(void)
 			ApplElements[eApplElement_watering_Auto].ApplActionState =
 					ApplActionState_Processed;
 
-			//#TODO Timer Timeout INT START
-
+			Appl_WateringWatchdogStart();
 			break;
 
 		case eApplElement_FlowMeterTarget:
@@ -333,8 +336,7 @@ void ApplHandler_Watering(void)
 			ApplElements[eApplElement_watering_Stop].ApplActionState =
 					ApplActionState_Processed;
 
-			//#TODO Timer Timeout STOP
-
+			Appl_WateringWatchdogStop();
 			break;
 
 		case eApplElement_watering_Timeout:
@@ -410,3 +412,24 @@ void ApplHandler_ProcessedButtons(void)
 
 }
 
+/* take into mind this call is TIM4 ISR */
+void Appl_WateringWatchdogHit(void)
+{
+	// critical STOP
+	WateringMechanism_Stop();
+
+	// enqueue the Stop ApplElement for Queue Handlling
+	MyQueue_Enqueue(&applQueue,
+			&ApplElements[eApplElement_watering_Stop]);
+}
+
+/* TIM4 OneShot Timer */
+static void Appl_WateringWatchdogStart(void)
+{
+	 Start_TIM4_OneShot();
+}
+/* TIM4 OneShot Timer */
+static void Appl_WateringWatchdogStop(void)
+{
+	Cancel_TIM4_OneShot();
+}

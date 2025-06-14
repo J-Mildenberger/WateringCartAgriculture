@@ -41,5 +41,8 @@ uint8_t DrTimer_IsTimerOver(sDrTimer_Timer *timer);
 void DrTimer_StopwatchStart(sDrTimer_Stopwatch *stopwatch);
 uint32_t DrTimer_StopwatchElapsed(sDrTimer_Stopwatch *stopwatch);
 
+/* TIM4 used as watering WatchDog */
+void Start_TIM4_OneShot(void);
+void Cancel_TIM4_OneShot(void);
 //TIM_HandleTypeDef
 #endif /* INC_DRTIMER_H_ */

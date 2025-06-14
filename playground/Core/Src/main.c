@@ -18,6 +18,7 @@
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
+#include "tim.h"
 #include "usart.h"
 #include "gpio.h"
 
@@ -125,6 +126,8 @@ int main(void)
 	/* Initialize all configured peripherals */
 	MX_GPIO_Init();
 	MX_USART2_UART_Init();
+	MX_TIM2_Init();
+	MX_TIM4_Init();
 	/* USER CODE BEGIN 2 */
 	HAL_Delay(10);
 	DBG_PRINT("\x1b[35m...delay for system ramp up\x1b[0m");
@@ -176,15 +179,13 @@ int main(void)
 		ApplHandler_ProcessedApplEls();
 		ApplHandler_ProcessedButtons();
 
-
-
 		if (FlowMeter1.pulseCount_target > 0)
 		{
 			static uint8_t once = 1;
-			if(once)
+			if (once)
 			{
 				DrTimer_StartTimer(&TimerFlowMeterSim, 5000);
-				once=0;
+				once = 0;
 			}
 
 			if (DrTimer_IsTimerOver(&TimerFlowMeterSim))

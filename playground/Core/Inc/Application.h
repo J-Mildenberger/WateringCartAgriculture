@@ -18,8 +18,17 @@
 #include "DrFlowMeter.h"
 /* Private defines -----------------------------------------------------------*/
 
-#define DOUT_RELAIS_ACTIVE 0u
-#define PUMP1_VALVE1_DELAY 650u
+#define DOUT_RELAIS_ACTIVE 0 /* Level which represents the actual logic active */
+#define PUMP1_VALVE1_DELAY 650
+
+#define WATERING_WDG_TIME  	12.5 /* in seconds - rounded down to 2.5 */
+#define WATERING_WDG_TIME_CALC = (WATERING_WDG_TIME / (2.5)) /* in 2.5 seconds steps e.g. 72 * 2.5s = 180s */
+
+#if WATERING_WDG_TIME < 30
+#warning WATERING_WDG_TIME is rather small!
+#endif
+
+
 /* Typedefs and structs ------------------------------------------------------*/
 
 /* high-layer state-machine for watering */
@@ -57,14 +66,14 @@ extern tQueue buttonQueue;
 extern sApplElement applQueueBuf[QUEUE_SIZE];
 extern tQueue applQueue;
 /* Function declarations -----------------------------------------------------*/
-void ApplHandler_SetWateringState(eApplState_watering state);
+void Appl_WateringWatchdogHit();
 void Appl_InitApplElements(void);
+void ApplHandler_SetWateringState(eApplState_watering state);
 bool ApplHandler_CheckFlowMeterTargetReached(sDrFlowMeter *pFlowMeter);
 void ApplHandler_WateringButtons(sButton *pButton);
 void ApplHandler_Watering(void);
-void Appl_Processed_to_Idle(void);
-void Appl_notify(void);
 void ApplHandler_MAIN(tQueue *q);
 void ApplHandler_ProcessedApplEls(void);
 void ApplHandler_ProcessedButtons(void);
+void ApplHandler_Processed_to_Idle(void);
 #endif /* INC_APPLICATION_H_ */
