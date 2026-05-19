@@ -29,6 +29,9 @@ Implements timing utilities. (= one-shot timer, cyclic timers, stopwatch). Also 
 ### `DrSystem` (`DrSystem.h` / `DrSystem.c`)
 System administration utilities for interrupt management. It provides mechanisms for entering/exiting critical sections and granular manipulation of NVIC IRQ priorities, ensuring critical interrupts remain responsive.
 
+### `DrStepperMotor`
+#TBD
+
 ### `MyQueue` (`MyQueue.h` / `MyQueue.c`)
 A generic FIFO ring buffer implementation. This module is the backbone of the project's event-driven architecture, enabling safe and decoupled data transfer between fast Interrupt Service Routines (ISRs) and the slower main processing loop.
 
